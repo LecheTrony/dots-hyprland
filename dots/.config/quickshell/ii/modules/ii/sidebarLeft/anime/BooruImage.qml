@@ -179,6 +179,21 @@ Button {
                                 ])
                             }
                         }
+                        MenuButton {
+                            id: fastfetchButton
+                            Layout.fillWidth: true
+                            buttonText: Translation.tr("Put in fastfetch")
+                            onClicked: {
+                                root.showActions = false;
+                                const sourcePath = `${root.downloadPath}/fastfetch-logo-src`;
+                                const logoPath = `${root.downloadPath}/fastfetch-logo.png`;
+                                const userAgent = Config.options?.networking?.userAgent ?? ""
+                                const userAgentHeader = userAgent ? ` -H 'User-Agent: ${StringUtils.shellSingleQuoteEscape(userAgent)}'` : ""
+                                Quickshell.execDetached(["bash", "-c", 
+                                    `mkdir -p '${root.downloadPath}' && curl '${StringUtils.shellSingleQuoteEscape(root.imageData.file_url)}'${userAgentHeader} -o '${sourcePath}' && magick '${sourcePath}' -strip -resize '512x512>' -background none -gravity center -extent 512x512 '${logoPath}' && rm -f '${sourcePath}' && rm -rf ~/.cache/fastfetch/images && notify-send '${Translation.tr("fastfetch logo set")}' '${logoPath}' -a 'Shell' && (kitty -1 &)`
+                                ])
+                            }
+                        }
                     }
                 }
             }

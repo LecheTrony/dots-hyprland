@@ -12,8 +12,10 @@ depends=(
   hypridle
   hyprlock
   hyprpicker
-  songrec
   translate-shell
   wlogout
   libqalculate
+)
+optdepends=(
+  'songrec: music recognition (Shazam) widget backend'
 )

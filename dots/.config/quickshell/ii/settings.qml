@@ -60,6 +60,11 @@ ApplicationWindow {
             component: "modules/settings/AdvancedConfig.qml"
         },
         {
+            name: Translation.tr("Display"),
+            icon: "monitor",
+            component: "modules/settings/DisplayConfig.qml"
+        },
+        {
             name: Translation.tr("About"),
             icon: "info",
             component: "modules/settings/About.qml"

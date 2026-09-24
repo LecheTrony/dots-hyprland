@@ -265,7 +265,8 @@ hl.config({
         touchpad = {
             natural_scroll = true,
             disable_while_typing = true,
-            clickfinger_behavior = true,
+            clickfinger_behavior = false,
+            tap_button_map = "lrm",
             scroll_factor = 0.7
         }
     },

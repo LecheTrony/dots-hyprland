@@ -12,6 +12,12 @@ if status is-interactive
         enable_transience
     end
     
+    # fastfetch
+    if type -q fastfetch
+        and test "$TERM" != "linux"
+        fastfetch
+    end
+
     # Colors
     if test -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt
         cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
