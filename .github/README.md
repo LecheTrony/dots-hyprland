@@ -25,6 +25,7 @@
 - **Wallpaper selectors (adapted from iNiR)**: three styles — **Grid**, **Coverflow** and **Launcher** — switchable from Settings (Interface → Wallpaper selector) or via IPC/global shortcuts.
 - **Coverflow / Launcher**: smooth coverflow carousel (slot layout without 3D rotation, batch-generated thumbnails, keyboard/scroll navigation) and a fullscreen skewed launcher list with folder history and search.
 - **Wallpaper transitions (adapted from iNiR)**: animated transition when changing the wallpaper — Crossfade, Fade through, Zoom, Slide, Push, Wipe or **Random** (cycles through all); configurable in Settings → Background → "Wallpaper transition".
+- **YT Music player (adapted from iNiR)**: a YouTube Music client in a new "Music" tab of the left sidebar — search, playlists, queue, liked songs, lyrics, account sync and a rich now-playing card. Backed by `yt-dlp` + `mpv` + `socat` + `deno` and the InnerTube engine (python-ytmusicapi) for real YT Music tracks (audio-only); toggle it with `sidebar.ytmusic.enable` in the config.
 
 ### Main branch
 
@@ -38,7 +39,7 @@
 ### Credits
 
 - [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) — base project / upstream.
-- [snowarch/iNiR](https://github.com/snowarch/iNiR) — wallpaper selector adaptation source (coverflow carousel and skewed launcher list), plus animated wallpaper transitions (crossfade / fade-through / zoom / slide / push / wipe + random).
+- [snowarch/iNiR](https://github.com/snowarch/iNiR) — wallpaper selector adaptation source (coverflow carousel and skewed launcher list), animated wallpaper transitions (crossfade / fade-through / zoom / slide / push / wipe + random), and the YT Music / Innertune player port (sidebar "Music" tab with search, playlists, queue and player widgets).
 
 ### License
 
@@ -63,6 +64,7 @@ GPL-3.0 (same as the original project).
 - **Selectores de fondo (adaptados de iNiR)**: tres estilos — **Grid** (cuadrícula), **Coverflow** (carrusel) y **Launcher** (lista sesgada a pantalla completa) — conmutables desde Ajustes (Interface → Wallpaper selector) o mediante IPC/atajos globales.
 - **Coverflow / Launcher**: carrusel fluido (layout de slots sin rotación 3D, miniaturas generadas en lote, navegación con teclado/scroll) y lista launcher a pantalla completa con historial de carpetas y búsqueda.
 - **Transiciones de fondo (adaptadas de iNiR)**: al cambiar el wallpaper hay transición animada — Crossfade, Fade through, Zoom, Slide, Push, Wipe o **Random** (alterna todas); configurables en Ajustes → Background → "Wallpaper transition".
+- **Reproductor de YT Music (adaptado de iNiR)**: un cliente de YouTube Music en una nueva pestaña "Music" de la barra lateral — búsqueda, playlists, cola, canciones con "Me gusta", letras, sincronización de cuenta y una tarjeta de reproducción enriquecida. Respaldado por `yt-dlp` + `mpv` + `socat` + `deno` y el motor InnerTube (python-ytmusicapi) para reproducir pistas reales de YT Music (solo audio); se activa con `sidebar.ytmusic.enable` en la configuración.
 
 ### Rama principal
 
@@ -76,7 +78,7 @@ GPL-3.0 (same as the original project).
 ### Créditos
 
 - [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) — proyecto base / upstream.
-- [snowarch/iNiR](https://github.com/snowarch/iNiR) — fuente de la adaptación de los selectores de fondo (carrusel coverflow y lista launcher sesgada), y también de las transiciones animadas de fondo (crossfade / fade-through / zoom / slide / push / wipe + random).
+- [snowarch/iNiR](https://github.com/snowarch/iNiR) — fuente de la adaptación de los selectores de fondo (carrusel coverflow y lista launcher sesgada), de las transiciones animadas de fondo (crossfade / fade-through / zoom / slide / push / wipe + random) y del port del reproductor de YT Music / Innertune (pestaña "Music" de la barra lateral con búsqueda, playlists, cola y widgets de reproducción).
 
 ### Licencia
 
