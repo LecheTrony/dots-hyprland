@@ -31,6 +31,13 @@ Item {
     property int pageLoading: -1
     property var pageQueue: ([])
     property bool bigMode: false
+    property bool fullMode: false
+    property bool immersive: false
+    property var seedManga: null
+    property var seedChapter: null
+    property int seedPage: -1
+    property int openPageOnLoad: -1
+    property bool openFirstChapterOnLoad: false
 
     property string searchQuery: ""
 
@@ -243,10 +250,42 @@ Item {
     }
 
     function toggleBigMode(): void {
+        if (root.fullMode) return
         root.setBigMode(!root.bigMode)
     }
 
+    function enterFullscreen(): void {
+        if (!root.selectedManga) return
+        root.fullMode = true
+        root.fullscreenRequested(root.selectedManga, root.selectedChapter, root.currentPageIndex)
+    }
+
+    function closeFullscreen(): void {
+        root.fullMode = false
+    }
+
+    function openAt(manga: var, chapter: var, page: int): void {
+        if (!manga || !manga.id) return
+        root.selectedManga = manga
+        root.pageCache = ({})
+        root.pages = ([])
+        root.openPageOnLoad = page
+        if (chapter && chapter.id) {
+            root.selectedChapter = chapter
+            root.fetchPages()
+        } else {
+            root.selectedChapter = null
+            root.openFirstChapterOnLoad = root.immersive
+            root.fetchChapters()
+        }
+    }
+
+    function applySeed(): void {
+        if (root.seedManga) root.openAt(root.seedManga, root.seedChapter, root.seedPage)
+    }
+
     signal bigModeRequested(bool on)
+    signal fullscreenRequested(var manga, var chapter, var page)
 
     onCurrentViewChanged: {
         if (root.currentView !== "reader" && root.bigMode) root.setBigMode(false)
@@ -271,16 +310,29 @@ Item {
                         root.mangaList = parsed
                     } else if (op === "chapters") {
                         root.chapters = parsed
-                        root.currentView = "chapters"
+                        if (root.openFirstChapterOnLoad) {
+                            root.openFirstChapterOnLoad = false
+                            if (parsed.length) {
+                                root.selectedChapter = parsed[0]
+                                root.fetchPages()
+                            } else {
+                                root.currentView = "chapters"
+                            }
+                        } else {
+                            root.currentView = "chapters"
+                        }
                     } else if (op === "pages") {
                         root.pages = parsed
                         root.pageCache = ({})
-                        root.currentPageIndex = 0
+                        let start = 0
+                        if (parsed.length > 0 && root.openPageOnLoad >= 0) start = Math.min(root.openPageOnLoad, parsed.length - 1)
+                        root.currentPageIndex = start
+                        root.openPageOnLoad = -1
                         root.pageLoading = -1
                         root.pageQueue = ([])
                         root.currentView = "reader"
-                        root.loadPageAt(0)
-                        root.loadPageAt(1)
+                        root.loadPageAt(start)
+                        root.loadPageAt(start + 1)
                     }
                 } else if (parsed && parsed.url && parsed.path) {
                     const key = parsed.key !== undefined ? String(parsed.key) : String(root.currentPageIndex)
@@ -304,7 +356,7 @@ Item {
     }
 
     Keys.onPressed: (event) => {
-        if (root.currentView !== "reader") return
+        if (root.immersive || root.currentView !== "reader") return
         if (event.key === Qt.Key_Left) {
             root.navigatePage("next")
             event.accepted = true
@@ -314,7 +366,10 @@ Item {
         }
     }
 
-    Component.onCompleted: root.loadPopular()
+    Component.onCompleted: {
+        if (root.seedManga) root.applySeed()
+        else root.loadPopular()
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -323,6 +378,7 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             spacing: 6
+            visible: !root.immersive
 
             Repeater {
                 id: viewTabs
@@ -448,7 +504,7 @@ Item {
 
         RowLayout {
             Layout.fillWidth: true
-            visible: root.currentView !== "list"
+            visible: !root.immersive && root.currentView !== "list"
             spacing: 6
 
             RippleButtonWithIcon {
@@ -491,7 +547,7 @@ Item {
                 implicitWidth: 36
                 implicitHeight: 36
                 buttonRadius: root.radiusSmall
-                materialIcon: "fullscreen"
+                materialIcon: root.inBigView() ? "fullscreen_exit" : "fullscreen"
                 mainText: ""
                 colBackground: root.colSurface
                 colBackgroundHover: root.colSurfaceHover
@@ -502,8 +558,21 @@ Item {
                 implicitWidth: 36
                 implicitHeight: 36
                 buttonRadius: root.radiusSmall
+                materialIcon: "open_in_full"
+                mainText: ""
+                visible: root.currentView === "reader"
+                colBackground: root.colSurface
+                colBackgroundHover: root.colSurfaceHover
+                onClicked: root.enterFullscreen()
+            }
+
+            RippleButtonWithIcon {
+                implicitWidth: 36
+                implicitHeight: 36
+                buttonRadius: root.radiusSmall
                 materialIcon: "open_in_new"
                 mainText: ""
+                visible: root.currentView === "chapters"
                 colBackground: root.colSurface
                 colBackgroundHover: root.colSurfaceHover
                 onClicked: root.openInBrowser()
@@ -719,6 +788,7 @@ Item {
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 6
+                    visible: !root.immersive
 
                     Rectangle {
                         Layout.fillWidth: true
@@ -834,6 +904,7 @@ Item {
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 6
+                    visible: !root.immersive
 
                     RippleButtonWithIcon {
                         Layout.fillWidth: true
