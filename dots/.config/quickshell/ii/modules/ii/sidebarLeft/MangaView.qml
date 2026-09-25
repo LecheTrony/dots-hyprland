@@ -126,13 +126,44 @@ Item {
         root.runScript("page", ["--page", root.pages[index].url, "--index", String(index)])
     }
 
+    function inBigView(): bool {
+        return root.currentView === "reader" && root.bigMode
+    }
+
+    function paneWide(index: int): bool {
+        if (index < 0 || index >= root.pages.length) return false
+        const img = index === root.currentPageIndex ? paneImageA
+            : index === root.currentPageIndex + 1 ? paneImageB : null
+        if (!img || img.sourceSize.height <= 0) return false
+        return img.sourceSize.width >= img.sourceSize.height
+    }
+
+    function pairActive(): bool {
+        if (!root.inBigView()) return false
+        if (root.currentPageIndex + 1 >= root.pages.length) return false
+        if (root.paneWide(root.currentPageIndex)) return false
+        return !root.paneWide(root.currentPageIndex + 1)
+    }
+
+    function hasPrevPage(): bool {
+        const step = root.pairActive() ? 2 : 1
+        return root.currentPageIndex - step >= 0
+    }
+
+    function hasNextPage(): bool {
+        const step = root.pairActive() ? 2 : 1
+        return root.currentPageIndex + step < root.pages.length
+    }
+
     function navigatePage(dir: string): void {
-        const target = dir === "next" ? root.currentPageIndex + 1 : root.currentPageIndex - 1
+        const step = root.pairActive() ? 2 : 1
+        const target = dir === "next" ? root.currentPageIndex + step : root.currentPageIndex - step
         if (target < 0 || target >= root.pages.length) return
         root.currentPageIndex = target
         root.loadPageAt(target)
         if (target + 1 < root.pages.length) root.loadPageAt(target + 1)
         if (target - 1 >= 0) root.loadPageAt(target - 1)
+        if (step === 2 && target + 2 < root.pages.length) root.loadPageAt(target + 2)
     }
 
     function sortedChapters(): var {
@@ -741,7 +772,7 @@ Item {
 
                         Rectangle {
                             id: pagePaneA
-                            width: root.bigMode ? (parent.width - 6) / 2 : parent.width
+                            width: root.pairActive() ? (parent.width - 6) / 2 : parent.width
                             height: parent.height
                             radius: root.radiusSmall
                             color: root.colSurface
@@ -756,6 +787,7 @@ Item {
                             }
 
                             Image {
+                                id: paneImageA
                                 anchors.fill: parent
                                 anchors.margins: 2
                                 visible: !!(root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path)
@@ -776,7 +808,7 @@ Item {
                             border.width: root.borderWidth
                             border.color: root.colBorder
                             clip: true
-                            visible: root.bigMode && root.currentPageIndex + 1 < root.pages.length
+                            visible: root.pairActive()
 
                             StyledIndeterminateProgressBar {
                                 anchors.centerIn: parent
@@ -785,6 +817,7 @@ Item {
                             }
 
                             Image {
+                                id: paneImageB
                                 anchors.fill: parent
                                 anchors.margins: 2
                                 visible: !!(root.pageCache[root.currentPageIndex + 1] && root.pageCache[root.currentPageIndex + 1].path)
@@ -822,8 +855,8 @@ Item {
                         mainText: ""
                         colBackground: root.colSurface
                         colBackgroundHover: root.colPrimaryHover
-                        opacity: root.currentPageIndex > 0 ? 1 : 0.4
-                        onClicked: if (root.currentPageIndex > 0) root.navigatePage("prev")
+                        opacity: root.hasPrevPage() ? 1 : 0.4
+                        onClicked: if (root.hasPrevPage()) root.navigatePage("prev")
                     }
 
                     RippleButtonWithIcon {
@@ -834,8 +867,8 @@ Item {
                         mainText: ""
                         colBackground: root.colSurface
                         colBackgroundHover: root.colPrimaryHover
-                        opacity: root.currentPageIndex < root.pages.length - 1 ? 1 : 0.4
-                        onClicked: if (root.currentPageIndex < root.pages.length - 1) root.navigatePage("next")
+                        opacity: root.hasNextPage() ? 1 : 0.4
+                        onClicked: if (root.hasNextPage()) root.navigatePage("next")
                     }
 
                     RippleButtonWithIcon {
