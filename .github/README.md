@@ -26,7 +26,7 @@
 - **Coverflow / Launcher**: smooth coverflow carousel (slot layout without 3D rotation, batch-generated thumbnails, keyboard/scroll navigation) and a fullscreen skewed launcher list with folder history and search.
 - **Wallpaper transitions (adapted from iNiR)**: animated transition when changing the wallpaper — Crossfade, Fade through, Zoom, Slide, Push, Wipe or **Random** (cycles through all); configurable in Settings → Background → "Wallpaper transition".
 - **YT Music player (adapted from iNiR)**: a YouTube Music client in a new "Music" tab of the left sidebar — search, playlists, queue, liked songs, lyrics, account sync and a rich now-playing card. Backed by `yt-dlp` + `mpv` + `socat` + `deno` and the InnerTube engine (python-ytmusicapi) for real YT Music tracks (audio-only); toggle it with `sidebar.ytmusic.enable` in the config.
-- **Lutris games**: a "Games" tab in the left sidebar that reads your local Lutris library (pga.db) and lists installed games with cover art, platform/runner and playtime; clicking a game launches it with `lutris lutris:rungame/<slug>` (there is also a search box, a refresh button and a shortcut to open the Lutris client). Toggle it with `sidebar.lutris.enable`.
+- **Lutris games**: a "Games" tab in the left sidebar that reads your local Lutris library (pga.db) and lists installed games with cover art, platform/runner and playtime; clicking a game launches it with `lutris lutris:rungame/<slug>` and shows a progress spinner on the row until the game window shows up (there is also a search box, a refresh button and a shortcut to open the Lutris client). Toggle it with `sidebar.lutris.enable`.
 
 ### Main branch
 
@@ -66,7 +66,7 @@ GPL-3.0 (same as the original project).
 - **Coverflow / Launcher**: carrusel fluido (layout de slots sin rotación 3D, miniaturas generadas en lote, navegación con teclado/scroll) y lista launcher a pantalla completa con historial de carpetas y búsqueda.
 - **Transiciones de fondo (adaptadas de iNiR)**: al cambiar el wallpaper hay transición animada — Crossfade, Fade through, Zoom, Slide, Push, Wipe o **Random** (alterna todas); configurables en Ajustes → Background → "Wallpaper transition".
 - **Reproductor de YT Music (adaptado de iNiR)**: un cliente de YouTube Music en una nueva pestaña "Music" de la barra lateral — búsqueda, playlists, cola, canciones con "Me gusta", letras, sincronización de cuenta y una tarjeta de reproducción enriquecida. Respaldado por `yt-dlp` + `mpv` + `socat` + `deno` y el motor InnerTube (python-ytmusicapi) para reproducir pistas reales de YT Music (solo audio); se activa con `sidebar.ytmusic.enable` en la configuración.
-- **Juegos de Lutris**: una pestaña "Games" en la barra lateral izquierda que lee tu biblioteca local de Lutris (pga.db) y lista los juegos instalados con su carátula, plataforma/runner y tiempo de juego; al hacer clic en un juego se lanza con `lutris lutris:rungame/<slug>` (también hay buscador, botón de refrescar y acceso directo al cliente de Lutris). Se activa con `sidebar.lutris.enable`.
+- **Juegos de Lutris**: una pestaña "Games" en la barra lateral izquierda que lee tu biblioteca local de Lutris (pga.db) y lista los juegos instalados con su carátula, plataforma/runner y tiempo de juego; al hacer clic en un juego se lanza con `lutris lutris:rungame/<slug>` y aparece un spinner de progreso en la fila hasta que aparece la ventana del juego (también hay buscador, botón de refrescar y acceso directo al cliente de Lutris). Se activa con `sidebar.lutris.enable`.
 
 ### Rama principal
 

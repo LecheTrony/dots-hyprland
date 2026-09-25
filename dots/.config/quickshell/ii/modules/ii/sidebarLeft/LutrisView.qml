@@ -19,6 +19,10 @@ Item {
     property var games: []
     property var filteredGames: []
 
+    property string launchingSlug: ""
+    property string launchingName: ""
+    property bool launching: root.launchingSlug.length > 0
+
     readonly property color colText: Appearance.colors.colOnLayer0
     readonly property color colTextSecondary: Appearance.colors.colSubtext
     readonly property color colSurface: Appearance.colors.colLayer1
@@ -60,9 +64,17 @@ Item {
         lookupProcess.running = true
     }
 
-    function launchGame(slug: string): void {
-        if (!slug.length) return
+    function launchGame(slug: string, name: string): void {
+        if (!slug.length || root.launching) return
+        root.launchingSlug = slug
+        root.launchingName = name.length ? name : slug
+        watchProcess.running = false
+        watchProcess.running = true
         Quickshell.execDetached(["lutris", "lutris:rungame/" + slug])
+    }
+
+    function _clearLaunching(): void {
+        root.launchingSlug = ""
     }
 
     function openLutris(): void {
@@ -97,6 +109,31 @@ Item {
             root.loading = false
         }
     }
+
+    Process {
+        id: watchProcess
+        command: ["python3", Directories.scriptPath + "/lutris/watcher.py", root.launchingName, "25"]
+        stdout: SplitParser {
+            onRead: line => {
+                if (typeof line !== "string" || !line.trim().length) return
+                const status = line.trim().split(" ")[0]
+                if (status === "STARTED" || status === "TIMEOUT") {
+                    root.launchingSlug = ""
+                }
+            }
+        }
+        onExited: () => root.launchingSlug = ""
+    }
+
+    Timer {
+        id: launchSafetyTimer
+        interval: 40000
+        repeat: false
+        running: false
+        onTriggered: if (root.launching) root.launchingSlug = ""
+    }
+
+    onLaunchingChanged: if (root.launching) launchSafetyTimer.restart()
 
     Component.onCompleted: root.refresh()
     onVisibleChanged: if (root.visible) root.refresh()
@@ -204,6 +241,7 @@ Item {
                 delegate: Rectangle {
                     id: row
                     required property var modelData
+                    readonly property bool rowIsLaunching: row.modelData.slug === root.launchingSlug
                     width: gamesList.width
                     height: 86
                     radius: root.radiusSmall
@@ -224,7 +262,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.launchGame(row.modelData.slug)
+                        onClicked: root.launchGame(row.modelData.slug, row.modelData.name)
                     }
 
                     RowLayout {
@@ -293,11 +331,31 @@ Item {
                             implicitWidth: 36
                             implicitHeight: 36
                             buttonRadius: root.radiusSmall
-                            materialIcon: "play_arrow"
+                            materialIcon: ""
+                            horizontalPadding: 0
                             mainText: ""
                             colBackground: "transparent"
-                            colBackgroundHover: root.colPrimaryHover
-                            onClicked: root.launchGame(row.modelData.slug)
+                            colBackgroundHover: rowIsLaunching ? "transparent" : root.colPrimaryHover
+                            mainContentComponent: Component {
+                                Item {
+                                    implicitWidth: 20
+                                    implicitHeight: 20
+                                    MaterialLoadingIndicator {
+                                        anchors.centerIn: parent
+                                        implicitSize: 18
+                                        loading: rowIsLaunching
+                                        visible: rowIsLaunching
+                                    }
+                                    MaterialSymbol {
+                                        anchors.centerIn: parent
+                                        text: "play_arrow"
+                                        iconSize: 16
+                                        color: Appearance.colors.colOnSecondaryContainer
+                                        visible: !rowIsLaunching
+                                    }
+                                }
+                            }
+                            onClicked: root.launchGame(row.modelData.slug, row.modelData.name)
                         }
                     }
                 }
