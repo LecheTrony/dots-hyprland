@@ -427,5 +427,43 @@ Singleton {
         return Math.round(baseDuration * (speedMultiplier ?? 1.0))
     }
 
+    // Theme-selection flags and objects used by ported iNiR UI. The active
+    // theme is Material, so every flag stays false and these objects alias the
+    // Material palette so that any branch (ternary or direct reference) stays
+    // defined and never throws.
+    readonly property bool inirEverywhere: false
+    readonly property bool editorialEverywhere: false
+    readonly property bool angelEverywhere: false
+    readonly property QtObject inir: QtObject {
+        readonly property real roundingSmall: root.rounding.small
+        readonly property real roundingNormal: root.rounding.normal
+        readonly property color colLayer: root.colors.colLayer1
+        readonly property color colLayer2: root.colors.colLayer2
+        readonly property color colPrimary: root.colors.colPrimary
+        readonly property color colPrimaryContainer: root.colors.colPrimaryContainer
+        readonly property color colBorder: root.colors.colOutlineVariant
+        readonly property color colText: root.colors.colOnLayer0
+        readonly property color colTextSecondary: root.colors.colSubtext
+    }
+    readonly property QtObject angel: QtObject {
+        readonly property real roundingSmall: root.rounding.small
+        readonly property real roundingNormal: root.rounding.normal
+        readonly property color colPrimary: root.colors.colPrimary
+        readonly property color colGlassCard: root.colors.colLayer2
+        readonly property color colGlassCardHover: root.colors.colLayer2Hover
+        readonly property color colGlassElevated: root.colors.colLayer3
+        readonly property color colCardBorder: root.colors.colOutlineVariant
+        readonly property real cardBorderWidth: 1
+    }
+    readonly property QtObject editorial: QtObject {
+        readonly property real spacing: 1
+        readonly property real radius: root.rounding.normal
+        readonly property color secondaryField: root.colors.colLayer2
+        readonly property color secondaryFieldInk: root.colors.colSubtext
+        readonly property int titleWeight: Font.DemiBold
+        readonly property real titleTracking: 0
+        readonly property bool ornaments: false
+    }
+
     syntaxHighlightingTheme: root.m3colors.darkmode ? "Monokai" : "ayu Light"
 }

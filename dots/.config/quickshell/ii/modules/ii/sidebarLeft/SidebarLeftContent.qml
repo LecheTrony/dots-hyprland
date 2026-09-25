@@ -17,11 +17,13 @@ Item {
     property bool animeEnabled: Config.options.policies.weeb !== 0
     property bool animeCloset: Config.options.policies.weeb === 2
     property bool ytMusicEnabled: Config.options.sidebar.ytmusic.enable
+    property bool lutrisEnabled: Config.options.sidebar.lutris.enable
     property var tabButtonList: [
         ...(root.aiChatEnabled ? [{"icon": "neurology", "name": Translation.tr("Intelligence")}] : []),
         ...(root.translatorEnabled ? [{"icon": "translate", "name": Translation.tr("Translator")}] : []),
         ...((root.animeEnabled && !root.animeCloset) ? [{"icon": "bookmark_heart", "name": Translation.tr("Anime")}] : []),
-        ...(root.ytMusicEnabled ? [{"icon": "music_note", "name": Translation.tr("Music")}] : [])
+        ...(root.ytMusicEnabled ? [{"icon": "music_note", "name": Translation.tr("Music")}] : []),
+        ...(root.lutrisEnabled ? [{"icon": "sports_esports", "name": Translation.tr("Games")}] : [])
     ]
     property int tabCount: swipeView.count
 
@@ -91,6 +93,7 @@ Item {
                     ...((root.tabButtonList.length === 0 || (!root.aiChatEnabled && !root.translatorEnabled && root.animeCloset)) ? [placeholder.createObject()] : []),
                     ...(root.animeEnabled ? [anime.createObject()] : []),
                     ...(root.ytMusicEnabled ? [ytMusic.createObject()] : []),
+                    ...(root.lutrisEnabled ? [lutris.createObject()] : []),
                 ]
             }
         }
@@ -110,6 +113,10 @@ Item {
         Component {
             id: ytMusic
             YtMusicView {}
+        }
+        Component {
+            id: lutris
+            LutrisView {}
         }
         Component {
             id: placeholder

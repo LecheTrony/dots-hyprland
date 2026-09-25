@@ -563,6 +563,9 @@ Singleton {
                         property string activePlaylistSource: ""
                     }
                 }
+                property JsonObject lutris: JsonObject {
+                    property bool enable: false
+                }
                 property JsonObject booru: JsonObject {
                     property bool allowNsfw: false
                     property string defaultProvider: "yandere"
