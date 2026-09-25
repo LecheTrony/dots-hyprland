@@ -157,6 +157,11 @@ Singleton {
                     property int start: 0
                     property list<var> laps: []
                 }
+                property JsonObject countdown: JsonObject {
+                    property bool running: false
+                    property int start: 0
+                    property int duration: 300
+                }
             }
         }
     }

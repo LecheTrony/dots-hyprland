@@ -9,7 +9,8 @@ Item {
     id: root
     property var tabButtonList: [
         {"name": Translation.tr("Pomodoro"), "icon": "search_activity"},
-        {"name": Translation.tr("Stopwatch"), "icon": "timer"}
+        {"name": Translation.tr("Stopwatch"), "icon": "timer"},
+        {"name": Translation.tr("Countdown"), "icon": "hourglass_empty"}
     ]
 
     // These are keybinds for stopwatch and pomodoro
@@ -70,6 +71,7 @@ Item {
             // Tabs
             PomodoroTimer {}
             Stopwatch {}
+            Countdown {}
         }
     }
 }
