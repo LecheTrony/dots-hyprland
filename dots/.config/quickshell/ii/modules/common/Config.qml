@@ -566,6 +566,9 @@ Singleton {
                 property JsonObject lutris: JsonObject {
                     property bool enable: false
                 }
+                property JsonObject manga: JsonObject {
+                    property bool enable: false
+                }
                 property JsonObject booru: JsonObject {
                     property bool allowNsfw: false
                     property string defaultProvider: "yandere"
