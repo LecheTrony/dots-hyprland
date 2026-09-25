@@ -132,8 +132,8 @@ Item {
 
     function paneWide(index: int): bool {
         if (index < 0 || index >= root.pages.length) return false
-        const img = index === root.currentPageIndex ? paneImageA
-            : index === root.currentPageIndex + 1 ? paneImageB : null
+        const img = index === root.currentPageIndex ? paneImageCurrent
+            : index === root.currentPageIndex + 1 ? paneImageNext : null
         if (!img || img.sourceSize.height <= 0) return false
         return img.sourceSize.width >= img.sourceSize.height
     }
@@ -771,36 +771,7 @@ Item {
                         spacing: 6
 
                         Rectangle {
-                            id: pagePaneA
-                            width: root.pairActive() ? (parent.width - 6) / 2 : parent.width
-                            height: parent.height
-                            radius: root.radiusSmall
-                            color: root.colSurface
-                            border.width: root.borderWidth
-                            border.color: root.colBorder
-                            clip: true
-
-                            StyledIndeterminateProgressBar {
-                                anchors.centerIn: parent
-                                width: parent.width - 24
-                                visible: !(root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path)
-                            }
-
-                            Image {
-                                id: paneImageA
-                                anchors.fill: parent
-                                anchors.margins: 2
-                                visible: !!(root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path)
-                                source: root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path
-                                    ? "file://" + root.pageCache[root.currentPageIndex].path : ""
-                                fillMode: Image.PreserveAspectFit
-                                asynchronous: true
-                                smooth: true
-                            }
-                        }
-
-                        Rectangle {
-                            id: pagePaneB
+                            id: pagePaneNext
                             width: (parent.width - 6) / 2
                             height: parent.height
                             radius: root.radiusSmall
@@ -817,12 +788,41 @@ Item {
                             }
 
                             Image {
-                                id: paneImageB
+                                id: paneImageNext
                                 anchors.fill: parent
                                 anchors.margins: 2
                                 visible: !!(root.pageCache[root.currentPageIndex + 1] && root.pageCache[root.currentPageIndex + 1].path)
                                 source: root.pageCache[root.currentPageIndex + 1] && root.pageCache[root.currentPageIndex + 1].path
                                     ? "file://" + root.pageCache[root.currentPageIndex + 1].path : ""
+                                fillMode: Image.PreserveAspectFit
+                                asynchronous: true
+                                smooth: true
+                            }
+                        }
+
+                        Rectangle {
+                            id: pagePaneCurrent
+                            width: root.pairActive() ? (parent.width - 6) / 2 : parent.width
+                            height: parent.height
+                            radius: root.radiusSmall
+                            color: root.colSurface
+                            border.width: root.borderWidth
+                            border.color: root.colBorder
+                            clip: true
+
+                            StyledIndeterminateProgressBar {
+                                anchors.centerIn: parent
+                                width: parent.width - 24
+                                visible: !(root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path)
+                            }
+
+                            Image {
+                                id: paneImageCurrent
+                                anchors.fill: parent
+                                anchors.margins: 2
+                                visible: !!(root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path)
+                                source: root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path
+                                    ? "file://" + root.pageCache[root.currentPageIndex].path : ""
                                 fillMode: Image.PreserveAspectFit
                                 asynchronous: true
                                 smooth: true
