@@ -22,6 +22,7 @@ Item {
     property string launchingSlug: ""
     property string launchingName: ""
     property bool launching: root.launchingSlug.length > 0
+    property int launchedAt: 0
 
     readonly property color colText: Appearance.colors.colOnLayer0
     readonly property color colTextSecondary: Appearance.colors.colSubtext
@@ -66,11 +67,24 @@ Item {
 
     function launchGame(slug: string, name: string): void {
         if (!slug.length || root.launching) return
+        watchProcess.running = false
         root.launchingSlug = slug
         root.launchingName = name.length ? name : slug
-        watchProcess.running = false
         watchProcess.running = true
+        root.launchedAt = Date.now()
         Quickshell.execDetached(["lutris", "lutris:rungame/" + slug])
+    }
+
+    function _graceClear(): void {
+        if (root.launchedAt === 0) return
+        const elapsed = Date.now() - root.launchedAt
+        root.launchedAt = 0
+        if (elapsed >= 1200) {
+            root.launchingSlug = ""
+        } else {
+            launchGraceTimer.interval = 1200 - elapsed
+            launchGraceTimer.restart()
+        }
     }
 
     function _clearLaunching(): void {
@@ -118,11 +132,19 @@ Item {
                 if (typeof line !== "string" || !line.trim().length) return
                 const status = line.trim().split(" ")[0]
                 if (status === "STARTED" || status === "TIMEOUT") {
-                    root.launchingSlug = ""
+                    root._graceClear()
                 }
             }
         }
-        onExited: () => root.launchingSlug = ""
+        onExited: () => root._graceClear()
+    }
+
+    Timer {
+        id: launchGraceTimer
+        interval: 1200
+        repeat: false
+        running: false
+        onTriggered: if (root.launching) root.launchingSlug = ""
     }
 
     Timer {

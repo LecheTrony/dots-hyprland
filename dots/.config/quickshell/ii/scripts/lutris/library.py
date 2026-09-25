@@ -24,11 +24,20 @@ def find_data_dir() -> str:
     return os.path.join(xdg, "lutris")
 
 
+def first_existing(base: str, slug: str) -> str:
+    for ext in (".jpg", ".png"):
+        path = os.path.join(base, slug + ext)
+        if os.path.isfile(path):
+            return path
+    return ""
+
+
 def main() -> None:
     data_dir = find_data_dir()
     db_path = os.path.join(data_dir, "pga.db")
     cover_dir = os.path.join(data_dir, "coverart")
     banner_dir = os.path.join(data_dir, "banners")
+    icon_dir = os.path.join(data_dir, "icons")
 
     games = []
     if not os.path.isfile(db_path):
@@ -43,15 +52,24 @@ def main() -> None:
             SELECT name, slug, runner, platform, installed, playtime, lastplayed,
                    year, directory, executable
             FROM games
+            WHERE installed = 1
+              AND id NOT IN (
+                  SELECT gc.game_id
+                  FROM games_categories gc
+                  INNER JOIN categories c ON c.id = gc.category_id
+                  WHERE c.name = '.hidden' COLLATE NOCASE
+              )
             ORDER BY COALESCE(lastplayed, 0) DESC
             """
         ).fetchall()
         for r in rows:
-            if not r["installed"]:
-                continue
             slug = r["slug"] or ""
-            cover = os.path.join(cover_dir, slug + ".jpg")
-            banner = os.path.join(banner_dir, slug + ".jpg")
+            cover = first_existing(cover_dir, slug)
+            if not cover:
+                cover = first_existing(banner_dir, slug)
+            if not cover:
+                cover = first_existing(icon_dir, slug)
+            banner = first_existing(banner_dir, slug)
             games.append(
                 {
                     "name": r["name"] or slug,
@@ -63,8 +81,8 @@ def main() -> None:
                     "year": r["year"],
                     "directory": r["directory"] or "",
                     "executable": r["executable"] or "",
-                    "cover": cover if os.path.isfile(cover) else "",
-                    "banner": banner if os.path.isfile(banner) else "",
+                    "cover": cover,
+                    "banner": banner,
                 }
             )
         conn.close()
