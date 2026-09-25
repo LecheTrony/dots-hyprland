@@ -29,22 +29,6 @@ Item {
     ]
     property int tabCount: swipeView.count
     property var mangaViewNode: root.mangaEnabled ? mangaComponent.createObject(null, { "objectName": "mangaSidebarView" }) : null
-    property var mangaFullscreenWindow: null
-
-    function openMangaFullscreen(manga, chapter) {
-        if (root.mangaFullscreenWindow) {
-            root.mangaFullscreenWindow.seedManga = manga
-            root.mangaFullscreenWindow.seedChapter = chapter
-            root.mangaFullscreenWindow.show()
-            return
-        }
-        const window = mangaFullscreenComponent.createObject(null, {
-            "seedManga": manga,
-            "seedChapter": chapter
-        })
-        root.mangaFullscreenWindow = window
-        window.show()
-    }
 
     function focusActiveItem() {
         swipeView.currentItem.forceActiveFocus()
@@ -143,14 +127,12 @@ Item {
             id: mangaComponent
             MangaView {}
         }
-        Component {
-            id: mangaFullscreenComponent
-            MangaFullscreenWindow {}
-        }
         Connections {
             target: root.mangaViewNode
-            function onOpenFullscreenRequested(manga, chapter) {
-                root.openMangaFullscreen(manga, chapter)
+            function onBigModeRequested(on) {
+                if (root.scopeRoot && root.scopeRoot.setMangaBigMode) {
+                    root.scopeRoot.setMangaBigMode(on)
+                }
             }
         }
         Component {

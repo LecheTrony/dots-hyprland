@@ -14,6 +14,12 @@ Scope { // Scope
     property bool pin: false
     property Component contentComponent: SidebarLeftContent {}
     property Item sidebarContent
+    property bool mangaBigMode: false
+
+    function setMangaBigMode(v: bool): void {
+        root.mangaBigMode = v
+        if (sidebarLoader.item) sidebarLoader.item.extend = v
+    }
 
     function toggleDetach() {
         root.detach = !root.detach;

@@ -30,9 +30,7 @@ Item {
     property var pendingArgs: ([])
     property int pageLoading: -1
     property var pageQueue: ([])
-    property bool standalone: false
-    property var openMangaOnLoad: null
-    property var openChapterOnLoad: null
+    property bool bigMode: false
 
     property string searchQuery: ""
 
@@ -207,11 +205,21 @@ Item {
         }
     }
 
-    function openFullscreen(): void {
-        root.openFullscreenRequested(root.selectedManga, root.selectedChapter)
+    function setBigMode(v: bool): void {
+        if (root.bigMode === v) return
+        root.bigMode = v
+        root.bigModeRequested(v)
     }
 
-    signal openFullscreenRequested(var manga, var chapter)
+    function toggleBigMode(): void {
+        root.setBigMode(!root.bigMode)
+    }
+
+    signal bigModeRequested(bool on)
+
+    onCurrentViewChanged: {
+        if (root.currentView !== "reader" && root.bigMode) root.setBigMode(false)
+    }
 
     Process {
         id: mangaProcess
@@ -233,13 +241,6 @@ Item {
                     } else if (op === "chapters") {
                         root.chapters = parsed
                         root.currentView = "chapters"
-                        if (root.openChapterOnLoad) {
-                            const wanted = root.openChapterOnLoad.id
-                            const target = parsed.find(c => c && c.id === wanted)
-                            root.selectedChapter = target || (parsed.length ? parsed[0] : null)
-                            root.openChapterOnLoad = null
-                            if (root.selectedChapter) root.fetchPages()
-                        }
                     } else if (op === "pages") {
                         root.pages = parsed
                         root.pageCache = ({})
@@ -248,6 +249,7 @@ Item {
                         root.pageQueue = ([])
                         root.currentView = "reader"
                         root.loadPageAt(0)
+                        root.loadPageAt(1)
                     }
                 } else if (parsed && parsed.url && parsed.path) {
                     const key = parsed.key !== undefined ? String(parsed.key) : String(root.currentPageIndex)
@@ -281,14 +283,7 @@ Item {
         }
     }
 
-    Component.onCompleted: {
-        if (root.openMangaOnLoad) {
-            root.selectedManga = root.openMangaOnLoad
-            root.fetchChapters()
-        } else {
-            root.loadPopular()
-        }
-    }
+    Component.onCompleted: root.loadPopular()
 
     ColumnLayout {
         anchors.fill: parent
@@ -412,18 +407,6 @@ Item {
                 implicitWidth: 36
                 implicitHeight: 36
                 buttonRadius: root.radiusSmall
-                materialIcon: "fullscreen"
-                mainText: ""
-                visible: !root.standalone
-                colBackground: root.colSurface
-                colBackgroundHover: root.colSurfaceHover
-                onClicked: root.openFullscreen()
-            }
-
-            RippleButtonWithIcon {
-                implicitWidth: 36
-                implicitHeight: 36
-                buttonRadius: root.radiusSmall
                 materialIcon: "open_in_new"
                 mainText: ""
                 colBackground: root.colSurface
@@ -479,10 +462,9 @@ Item {
                 buttonRadius: root.radiusSmall
                 materialIcon: "fullscreen"
                 mainText: ""
-                visible: !root.standalone
                 colBackground: root.colSurface
                 colBackgroundHover: root.colSurfaceHover
-                onClicked: root.openFullscreen()
+                onClicked: root.toggleBigMode()
             }
 
             RippleButtonWithIcon {
@@ -753,21 +735,66 @@ Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    StyledIndeterminateProgressBar {
-                        anchors.centerIn: parent
-                        width: parent.width - 24
-                        visible: !!(root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path)
-                    }
-
-                    Image {
+                    Row {
                         anchors.fill: parent
-                        anchors.margins: 2
-                        visible: !!(root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path)
-                        source: root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path
-                            ? "file://" + root.pageCache[root.currentPageIndex].path : ""
-                        fillMode: Image.PreserveAspectFit
-                        asynchronous: true
-                        smooth: true
+                        spacing: 6
+
+                        Rectangle {
+                            id: pagePaneA
+                            width: root.bigMode ? (parent.width - 6) / 2 : parent.width
+                            height: parent.height
+                            radius: root.radiusSmall
+                            color: root.colSurface
+                            border.width: root.borderWidth
+                            border.color: root.colBorder
+                            clip: true
+
+                            StyledIndeterminateProgressBar {
+                                anchors.centerIn: parent
+                                width: parent.width - 24
+                                visible: !(root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path)
+                            }
+
+                            Image {
+                                anchors.fill: parent
+                                anchors.margins: 2
+                                visible: !!(root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path)
+                                source: root.pageCache[root.currentPageIndex] && root.pageCache[root.currentPageIndex].path
+                                    ? "file://" + root.pageCache[root.currentPageIndex].path : ""
+                                fillMode: Image.PreserveAspectFit
+                                asynchronous: true
+                                smooth: true
+                            }
+                        }
+
+                        Rectangle {
+                            id: pagePaneB
+                            width: (parent.width - 6) / 2
+                            height: parent.height
+                            radius: root.radiusSmall
+                            color: root.colSurface
+                            border.width: root.borderWidth
+                            border.color: root.colBorder
+                            clip: true
+                            visible: root.bigMode && root.currentPageIndex + 1 < root.pages.length
+
+                            StyledIndeterminateProgressBar {
+                                anchors.centerIn: parent
+                                width: parent.width - 24
+                                visible: !(root.pageCache[root.currentPageIndex + 1] && root.pageCache[root.currentPageIndex + 1].path)
+                            }
+
+                            Image {
+                                anchors.fill: parent
+                                anchors.margins: 2
+                                visible: !!(root.pageCache[root.currentPageIndex + 1] && root.pageCache[root.currentPageIndex + 1].path)
+                                source: root.pageCache[root.currentPageIndex + 1] && root.pageCache[root.currentPageIndex + 1].path
+                                    ? "file://" + root.pageCache[root.currentPageIndex + 1].path : ""
+                                fillMode: Image.PreserveAspectFit
+                                asynchronous: true
+                                smooth: true
+                            }
+                        }
                     }
                 }
 
