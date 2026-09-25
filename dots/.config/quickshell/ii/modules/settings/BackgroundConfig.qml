@@ -8,6 +8,73 @@ ContentPage {
     forceWidth: true
 
     ContentSection {
+        icon: "slideshow"
+        title: Translation.tr("Wallpaper transition")
+
+        ConfigRow {
+            Layout.fillWidth: true
+
+            ConfigSwitch {
+                Layout.fillWidth: false
+                buttonIcon: "animation"
+                text: Translation.tr("Enable")
+                checked: Config.options.background.transition.enable
+                onCheckedChanged: {
+                    Config.options.background.transition.enable = checked;
+                }
+            }
+        }
+
+        ConfigRow {
+            Layout.fillWidth: true
+
+            ConfigSelectionArray {
+                currentValue: Config.options.background.transition.type
+                onSelected: newValue => {
+                    Config.options.background.transition.type = newValue;
+                }
+                options: [
+                    {
+                        displayName: Translation.tr("Random"),
+                        icon: "shuffle",
+                        value: "random"
+                    },
+                    {
+                        displayName: Translation.tr("Crossfade"),
+                        icon: "blur_linear",
+                        value: "crossfade"
+                    },
+                    {
+                        displayName: Translation.tr("Fade through"),
+                        icon: "gradient",
+                        value: "fadeThrough"
+                    },
+                    {
+                        displayName: Translation.tr("Zoom"),
+                        icon: "zoom_in_map",
+                        value: "zoom"
+                    },
+                    {
+                        displayName: Translation.tr("Slide"),
+                        icon: "swipe",
+                        value: "slide"
+                    },
+                    {
+                        displayName: Translation.tr("Push"),
+                        icon: "width_full",
+                        value: "push"
+                    },
+                    {
+                        displayName: Translation.tr("Wipe"),
+                        icon: "swipe_down_alt",
+                        value: "wipe"
+                    },
+                ]
+            }
+        }
+    }
+
+    ContentSection {
         icon: "sync_alt"
         title: Translation.tr("Parallax")
 

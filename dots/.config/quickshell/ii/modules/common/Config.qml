@@ -221,6 +221,11 @@ Singleton {
                     property bool enableSidebar: false
                     property real widgetsFactor: 1.2
                 }
+                property JsonObject transition: JsonObject {
+                    property bool enable: true
+                    property string type: "random" // random | crossfade | fadeThrough | zoom | slide | push | wipe
+                    property string direction: "right" // left | right | up | down
+                }
             }
 
             property JsonObject bar: JsonObject {

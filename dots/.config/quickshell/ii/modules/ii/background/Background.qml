@@ -128,12 +128,10 @@ Variants {
             anchors.fill: parent
 
             // Wallpaper
-            StyledImage {
+            WallpaperCrossfader {
                 id: wallpaper
                 visible: opacity > 0 && !blurLoader.active
-                opacity: (status === Image.Ready && !bgRoot.wallpaperIsVideo) ? 1 : 0
-                cache: false
-                smooth: false
+                opacity: bgRoot.wallpaperIsVideo ? 0 : (wallpaper.ready ? 1 : 0)
 
                 property int workspaceIndex: (bgRoot.monitor.activeWorkspace?.id ?? 1) - 1
                 property real middleFraction: 0.5
@@ -182,6 +180,9 @@ Variants {
 
                 source: bgRoot.wallpaperSafetyTriggered ? "" : bgRoot.wallpaperPath
                 fillMode: Image.PreserveAspectCrop
+                transitionsEnabled: Config.options?.background?.transition?.enable ?? true
+                transitionType: Config.options?.background?.transition?.type ?? "crossfade"
+                transitionDirection: Config.options?.background?.transition?.direction ?? "right"
                 Behavior on x {
                     NumberAnimation {
                         duration: 600
