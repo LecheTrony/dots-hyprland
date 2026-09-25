@@ -585,6 +585,9 @@ Singleton {
             
             property JsonObject wallpaperSelector: JsonObject {
                 property bool useSystemFileDialog: false
+                property string style: "grid" // "grid" | "coverflow" | "launcher"
+                property string selectionTarget: "main"
+                property string targetMonitor: ""
             }
             
             property JsonObject windows: JsonObject {

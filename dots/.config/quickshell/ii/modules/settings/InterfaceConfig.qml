@@ -817,6 +817,33 @@ ContentPage {
                 Config.options.wallpaperSelector.useSystemFileDialog = checked;
             }
         }
+
+        ConfigRow {
+            uniform: true
+            ConfigSelectionArray {
+                currentValue: Config.options.wallpaperSelector.style
+                onSelected: newValue => {
+                    Config.options.wallpaperSelector.style = newValue
+                }
+                options: [
+                    {
+                        displayName: Translation.tr("Grid"),
+                        icon: "grid_view",
+                        value: "grid"
+                    },
+                    {
+                        displayName: Translation.tr("Coverflow"),
+                        icon: "view_carousel",
+                        value: "coverflow"
+                    },
+                    {
+                        displayName: Translation.tr("Launcher"),
+                        icon: "view_agenda",
+                        value: "launcher"
+                    }
+                ]
+            }
+        }
     }
 
     ContentSection {

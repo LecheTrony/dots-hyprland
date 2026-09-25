@@ -22,6 +22,8 @@
 - **Touchpad**: `tap_button_map = "lrm"` with Clickfinger gestures disabled so the touchpad responds to three buttons.
 - **Local PATH**: `~/.local/bin` takes priority in the environment (`env.lua`) for local wrappers and flake binaries.
 - **Fastfetch dotfiles**: configuration with a 23-line height and a themed separator.
+- **Wallpaper selectors (adapted from iNiR)**: three styles — **Grid**, **Coverflow** and **Launcher** — switchable from Settings (Interface → Wallpaper selector) or via IPC/global shortcuts.
+- **Coverflow / Launcher**: smooth coverflow carousel (slot layout without 3D rotation, batch-generated thumbnails, keyboard/scroll navigation) and a fullscreen skewed launcher list with folder history and search.
 
 ### Main branch
 
@@ -52,6 +54,8 @@ GPL-3.0 (same as the original project).
 - **Touchpad**: `tap_button_map = "lrm"` y desactivado el gesto de clic hacia atrás (Clickfinger) para que el panel táctil responda a tres botones.
 - **PATH local**: `~/.local/bin` tiene prioridad en el entorno (`env.lua`) para envoltorios locales y binarios de flake.
 - **Dotfiles de fastfetch**: configuración con altura de 23 líneas y divisor temático.
+- **Selectores de fondo (adaptados de iNiR)**: tres estilos — **Grid** (cuadrícula), **Coverflow** (carrusel) y **Launcher** (lista sesgada a pantalla completa) — conmutables desde Ajustes (Interface → Wallpaper selector) o mediante IPC/atajos globales.
+- **Coverflow / Launcher**: carrusel fluido (layout de slots sin rotación 3D, miniaturas generadas en lote, navegación con teclado/scroll) y lista launcher a pantalla completa con historial de carpetas y búsqueda.
 
 ### Rama principal
 

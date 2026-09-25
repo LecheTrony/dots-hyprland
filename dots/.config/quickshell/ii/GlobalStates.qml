@@ -29,6 +29,11 @@ Singleton {
     property bool superDown: false
     property bool superReleaseMightTrigger: true
     property bool wallpaperSelectorOpen: false
+    property bool wallpaperLauncherOpen: false
+    property string wallpaperLauncherMode: "static"
+    property bool coverflowSelectorOpen: false
+    property string wallpaperSelectionTarget: "main"
+    property string wallpaperSelectorTargetMonitor: ""
     property bool workspaceShowNumbers: false
 
     onSidebarRightOpenChanged: {
