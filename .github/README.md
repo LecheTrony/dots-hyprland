@@ -34,6 +34,11 @@
 
 - Upstream: [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland)
 
+### Credits
+
+- [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) — base project / upstream.
+- [snowarch/iNiR](https://github.com/snowarch/iNiR) — wallpaper selector adaptation source (coverflow carousel and skewed launcher list).
+
 ### License
 
 GPL-3.0 (same as the original project).
@@ -65,6 +70,11 @@ GPL-3.0 (same as the original project).
 ### Enlaces
 
 - Upstream: [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland)
+
+### Créditos
+
+- [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) — proyecto base / upstream.
+- [snowarch/iNiR](https://github.com/snowarch/iNiR) — fuente de la adaptación de los selectores de fondo (carrusel coverflow y lista launcher sesgada).
 
 ### Licencia
 
