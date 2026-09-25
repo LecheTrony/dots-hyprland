@@ -30,6 +30,9 @@ Item {
     property var pendingArgs: ([])
     property int pageLoading: -1
     property var pageQueue: ([])
+    property bool standalone: false
+    property var openMangaOnLoad: null
+    property var openChapterOnLoad: null
 
     property string searchQuery: ""
 
@@ -204,6 +207,12 @@ Item {
         }
     }
 
+    function openFullscreen(): void {
+        root.openFullscreenRequested(root.selectedManga, root.selectedChapter)
+    }
+
+    signal openFullscreenRequested(var manga, var chapter)
+
     Process {
         id: mangaProcess
         stdout: SplitParser {
@@ -224,6 +233,13 @@ Item {
                     } else if (op === "chapters") {
                         root.chapters = parsed
                         root.currentView = "chapters"
+                        if (root.openChapterOnLoad) {
+                            const wanted = root.openChapterOnLoad.id
+                            const target = parsed.find(c => c && c.id === wanted)
+                            root.selectedChapter = target || (parsed.length ? parsed[0] : null)
+                            root.openChapterOnLoad = null
+                            if (root.selectedChapter) root.fetchPages()
+                        }
                     } else if (op === "pages") {
                         root.pages = parsed
                         root.pageCache = ({})
@@ -265,7 +281,14 @@ Item {
         }
     }
 
-    Component.onCompleted: root.loadPopular()
+    Component.onCompleted: {
+        if (root.openMangaOnLoad) {
+            root.selectedManga = root.openMangaOnLoad
+            root.fetchChapters()
+        } else {
+            root.loadPopular()
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -389,6 +412,18 @@ Item {
                 implicitWidth: 36
                 implicitHeight: 36
                 buttonRadius: root.radiusSmall
+                materialIcon: "fullscreen"
+                mainText: ""
+                visible: !root.standalone
+                colBackground: root.colSurface
+                colBackgroundHover: root.colSurfaceHover
+                onClicked: root.openFullscreen()
+            }
+
+            RippleButtonWithIcon {
+                implicitWidth: 36
+                implicitHeight: 36
+                buttonRadius: root.radiusSmall
                 materialIcon: "open_in_new"
                 mainText: ""
                 colBackground: root.colSurface
@@ -436,6 +471,18 @@ Item {
                     elide: Text.ElideRight
                     color: root.colText
                 }
+            }
+
+            RippleButtonWithIcon {
+                implicitWidth: 36
+                implicitHeight: 36
+                buttonRadius: root.radiusSmall
+                materialIcon: "fullscreen"
+                mainText: ""
+                visible: !root.standalone
+                colBackground: root.colSurface
+                colBackgroundHover: root.colSurfaceHover
+                onClicked: root.openFullscreen()
             }
 
             RippleButtonWithIcon {

@@ -28,6 +28,23 @@ Item {
         ...(root.mangaEnabled ? [{"icon": "menu_book", "name": Translation.tr("Manga")}] : [])
     ]
     property int tabCount: swipeView.count
+    property var mangaViewNode: root.mangaEnabled ? mangaComponent.createObject(null, { "objectName": "mangaSidebarView" }) : null
+    property var mangaFullscreenWindow: null
+
+    function openMangaFullscreen(manga, chapter) {
+        if (root.mangaFullscreenWindow) {
+            root.mangaFullscreenWindow.seedManga = manga
+            root.mangaFullscreenWindow.seedChapter = chapter
+            root.mangaFullscreenWindow.show()
+            return
+        }
+        const window = mangaFullscreenComponent.createObject(null, {
+            "seedManga": manga,
+            "seedChapter": chapter
+        })
+        root.mangaFullscreenWindow = window
+        window.show()
+    }
 
     function focusActiveItem() {
         swipeView.currentItem.forceActiveFocus()
@@ -55,11 +72,12 @@ Item {
 
         Toolbar {
             visible: tabButtonList.length > 0
-            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignVCenter
             enableShadow: false
             ToolbarTabBar {
                 id: tabBar
-                Layout.alignment: Qt.AlignHCenter
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 tabButtonList: root.tabButtonList
                 currentIndex: swipeView.currentIndex
             }
@@ -96,7 +114,7 @@ Item {
                     ...(root.animeEnabled ? [anime.createObject()] : []),
                     ...(root.ytMusicEnabled ? [ytMusic.createObject()] : []),
                     ...(root.lutrisEnabled ? [lutris.createObject()] : []),
-                    ...(root.mangaEnabled ? [manga.createObject()] : []),
+                    ...(root.mangaEnabled ? [root.mangaViewNode] : []),
                 ]
             }
         }
@@ -122,8 +140,18 @@ Item {
             LutrisView {}
         }
         Component {
-            id: manga
+            id: mangaComponent
             MangaView {}
+        }
+        Component {
+            id: mangaFullscreenComponent
+            MangaFullscreenWindow {}
+        }
+        Connections {
+            target: root.mangaViewNode
+            function onOpenFullscreenRequested(manga, chapter) {
+                root.openMangaFullscreen(manga, chapter)
+            }
         }
         Component {
             id: placeholder
