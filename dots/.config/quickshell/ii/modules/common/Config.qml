@@ -43,6 +43,15 @@ Singleton {
         obj[keys[keys.length - 1]] = convertedValue;
     }
 
+    function setNestedValues(updates) {
+        if (!updates || typeof updates !== "object")
+            return;
+        const paths = Object.keys(updates);
+        for (let i = 0; i < paths.length; ++i) {
+            root.setNestedValue(paths[i], updates[paths[i]]);
+        }
+    }
+
     Timer {
         id: fileReloadTimer
         interval: root.readWriteDelay
@@ -508,6 +517,51 @@ Singleton {
                 }
                 property JsonObject ai: JsonObject {
                     property bool textFadeIn: false
+                }
+                property JsonObject ytmusic: JsonObject {
+                    property bool enable: false
+                    property bool autoConnect: false
+                    property bool hideSyncBanner: false
+                    property string browser: ""
+                    property string cookiesPath: ""
+                    property bool useManualCookies: false
+                    property bool connected: false
+                    property string resolvedBrowserArg: ""
+                    property string audioQuality: "best"
+                    property bool normalizeVolume: true
+                    property bool verbose: false
+                    property bool shuffleMode: false
+                    property int repeatMode: 0
+                    property list<var> recentSearches: []
+                    property list<var> queue: []
+                    property list<var> playlists: []
+                    property list<var> liked: []
+                    property string lastLikedSync: ""
+                    property bool upNextNotifications: true
+                    property bool suppressUpNextInFullscreen: true
+                    property int volume: 100
+                    property JsonObject profile: JsonObject {
+                        property string name: ""
+                        property string avatar: ""
+                        property string url: ""
+                    }
+                    property JsonObject cache: JsonObject {
+                        property list<var> playlists: []
+                        property list<var> albums: []
+                        property list<var> liked: []
+                    }
+                    property JsonObject resume: JsonObject {
+                        property string videoId: ""
+                        property string title: ""
+                        property string artist: ""
+                        property string thumbnail: ""
+                        property string url: ""
+                        property int position: 0
+                        property bool wasPlaying: false
+                        property list<var> activePlaylist: []
+                        property int currentIndex: -1
+                        property string activePlaylistSource: ""
+                    }
                 }
                 property JsonObject booru: JsonObject {
                     property bool allowNsfw: false

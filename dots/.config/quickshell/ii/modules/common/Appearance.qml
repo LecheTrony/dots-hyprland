@@ -414,5 +414,18 @@ Singleton {
         property real wallpaperSelectorItemPadding: 6
     }
 
+    // iNiR compatibility surface (used by the ported YT Music / InnerTune UI).
+    readonly property bool animationsEnabled: !(Config?.options?.performance?.reduceAnimations ?? false)
+    readonly property bool effectsEnabled: true
+    readonly property real fontSizeScale: Config?.options?.appearance?.typography?.sizeScale ?? 1.0
+    readonly property color colActionIcon: colors.colPrimary
+    readonly property color colSecondaryActionIcon: colors.colSecondary
+    readonly property color colInactiveControlSurface: colors.colLayer2
+    readonly property color colMetadataText: ColorUtils.mix(colors.colOnLayer1, colors.colSecondary, 0.84)
+    function calcEffectiveDuration(baseDuration, speedMultiplier) {
+        if (!root.animationsEnabled) return 0
+        return Math.round(baseDuration * (speedMultiplier ?? 1.0))
+    }
+
     syntaxHighlightingTheme: root.m3colors.darkmode ? "Monokai" : "ayu Light"
 }
