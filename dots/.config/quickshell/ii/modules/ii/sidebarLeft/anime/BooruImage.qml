@@ -26,6 +26,30 @@ Button {
     property real imageRadius: Appearance.rounding.small
 
     property bool showActions: false
+
+    function hideMenu() {
+        root.showActions = false;
+        Booru.releaseContextMenu(root);
+    }
+
+    function repositionMenu() {
+        const overlay = contextMenuPopup.parent;
+        if (!overlay || !root.showActions) return;
+        const menuWidth = contextMenuPopup.implicitWidth;
+        const menuHeight = contextMenuPopup.implicitHeight;
+        const anchor = menuButton.mapToItem(overlay, menuButton.width, menuButton.height + 8);
+        let x = anchor.x - menuWidth;
+        x = Math.max(8, Math.min(x, overlay.width - menuWidth - 8));
+        let y = anchor.y;
+        y = Math.max(8, Math.min(y, overlay.height - menuHeight - 8));
+        contextMenuPopup.x = x;
+        contextMenuPopup.y = y;
+    }
+
+    Component.onDestruction: {
+        if (Booru.openContextMenu === root) Booru.openContextMenu = null;
+    }
+
     ImageDownloaderProcess {
         id: imageDownloader
         running: root.manualDownload
@@ -100,53 +124,46 @@ Button {
             }
 
             onClicked: {
-                root.showActions = !root.showActions
+                if (root.showActions) {
+                    root.hideMenu()
+                } else {
+                    root.showActions = true
+                    Booru.requestContextMenu(root)
+                    root.repositionMenu()
+                    Qt.callLater(root.repositionMenu)
+                }
             }
         }
 
-        Loader {
-            id: contextMenuLoader
-            active: root.showActions
-            anchors.top: menuButton.bottom
-            anchors.right: parent.right
-            anchors.margins: 8
+        Popup {
+            id: contextMenuPopup
+            modal: true
+            dim: false
+            closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+            padding: 0
+            visible: root.showActions
+            implicitWidth: contextMenuColumnLayout.implicitWidth
+            implicitHeight: contextMenuColumnLayout.implicitHeight + Appearance.rounding.small * 2
 
-            sourceComponent: Item {
-                width: contextMenu.width
-                height: contextMenu.height
+            onClosed: root.hideMenu()
 
-                StyledRectangularShadow {
-                    target: contextMenu
-                }
-                Rectangle {
-                    id: contextMenu
-                    anchors.centerIn: parent
-                    opacity: root.showActions ? 1 : 0
-                    visible: opacity > 0
-                    radius: Appearance.rounding.small
-                    color: Appearance.m3colors.m3surfaceContainer
-                    implicitHeight: contextMenuColumnLayout.implicitHeight + radius * 2
-                    implicitWidth: contextMenuColumnLayout.implicitWidth
+            background: Rectangle {
+                radius: Appearance.rounding.small
+                color: Appearance.m3colors.m3surfaceContainer
+            }
 
-                    Behavior on opacity {
-                        NumberAnimation {
-                            duration: Appearance.animation.elementMoveFast.duration
-                            easing.type: Appearance.animation.elementMoveFast.type
-                            easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
-                        }
-                    }
-
-                    ColumnLayout {
-                        id: contextMenuColumnLayout
-                        anchors.centerIn: parent
-                        spacing: 0
+            ColumnLayout {
+                id: contextMenuColumnLayout
+                anchors.fill: parent
+                anchors.margins: Appearance.rounding.small
+                spacing: 0
 
                         MenuButton {
                             id: openFileLinkButton
                             Layout.fillWidth: true
                             buttonText: Translation.tr("Open file link")
                             onClicked: {
-                                root.showActions = false
+                                root.hideMenu()
                                 Hyprland.dispatch("hl.config({cursor = {no_warps = true}})")
                                 Qt.openUrlExternally(root.imageData.file_url)
                                 Hyprland.dispatch("hl.config({cursor = {no_warps = false}})")
@@ -159,7 +176,7 @@ Button {
                             buttonText: Translation.tr("Go to source (%1)").arg(StringUtils.getDomain(root.imageData.source))
                             enabled: root.imageData.source && root.imageData.source.length > 0
                             onClicked: {
-                                root.showActions = false
+                                root.hideMenu()
                                 Hyprland.dispatch("hl.config({cursor = {no_warps = true}})")
                                 Qt.openUrlExternally(root.imageData.source)
                                 Hyprland.dispatch("hl.config({cursor = {no_warps = false}})")
@@ -170,7 +187,7 @@ Button {
                             Layout.fillWidth: true
                             buttonText: Translation.tr("Download")
                             onClicked: {
-                                root.showActions = false;
+                                root.hideMenu();
                                 const targetPath = root.imageData.is_nsfw ? root.nsfwPath : root.downloadPath;
                                 const userAgent = Config.options?.networking?.userAgent ?? ""
                                 const userAgentHeader = userAgent ? ` -H 'User-Agent: ${StringUtils.shellSingleQuoteEscape(userAgent)}'` : ""
@@ -184,7 +201,7 @@ Button {
                             Layout.fillWidth: true
                             buttonText: Translation.tr("Put in fastfetch")
                             onClicked: {
-                                root.showActions = false;
+                                root.hideMenu();
                                 const sourcePath = `${root.downloadPath}/fastfetch-logo-src`;
                                 const logoPath = `${root.downloadPath}/fastfetch-logo.png`;
                                 const userAgent = Config.options?.networking?.userAgent ?? ""
@@ -194,9 +211,23 @@ Button {
                                 ])
                             }
                         }
+                        MenuButton {
+                            id: sidePanelButton
+                            Layout.fillWidth: true
+                            buttonText: Translation.tr("Set as side panel image")
+                            onClicked: {
+                                root.hideMenu();
+                                const sourcePath = `${root.downloadPath}/sidepanel-anime-src`;
+                                const panelPath = `${root.downloadPath}/sidepanel-anime.png`;
+                                const userAgent = Config.options?.networking?.userAgent ?? ""
+                                const userAgentHeader = userAgent ? ` -H 'User-Agent: ${StringUtils.shellSingleQuoteEscape(userAgent)}'` : ""
+                                Quickshell.execDetached(["bash", "-c", 
+                                    `mkdir -p '${root.downloadPath}' && curl '${StringUtils.shellSingleQuoteEscape(root.imageData.file_url)}'${userAgentHeader} -o '${sourcePath}' && magick '${sourcePath}' -strip -resize '1024x1024>' '${panelPath}' && rm -f '${sourcePath}' && notify-send '${Translation.tr("Side panel anime set")}' '${panelPath}' -a 'Shell'`
+                                ])
+                            }
+                        }
                     }
                 }
-            }
+
         }
-    }
 }

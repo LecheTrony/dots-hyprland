@@ -19,6 +19,20 @@ Singleton {
     property string failMessage: Translation.tr("That didn't work. Tips:\n- Check your tags and NSFW settings\n- If you don't have a tag in mind, type a page number")
     property var responses: []
     property int runningRequests: 0
+    property var openContextMenu: null
+
+    function requestContextMenu(menu) {
+        if (openContextMenu && openContextMenu !== menu) {
+            openContextMenu.hideMenu()
+        }
+        openContextMenu = menu
+    }
+
+    function releaseContextMenu(menu) {
+        if (openContextMenu === menu) {
+            openContextMenu = null
+        }
+    }
     property var defaultUserAgent: Config.options?.networking?.userAgent || "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
     property var providerList: Object.keys(providers).filter(provider => provider !== "system" && providers[provider].api)
     property var providers: {

@@ -36,6 +36,12 @@ Rectangle {
             "icon": "schedule",
             "widget": "pomodoro/PomodoroWidget.qml"
         },
+        {
+            "type": "anime",
+            "name": Translation.tr("Anime"),
+            "icon": "auto_awesome",
+            "widget": "anime/AnimePanel.qml"
+        },
     ]
 
     Behavior on implicitHeight {
