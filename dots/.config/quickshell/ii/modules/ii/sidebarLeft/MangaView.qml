@@ -306,10 +306,10 @@ Item {
     Keys.onPressed: (event) => {
         if (root.currentView !== "reader") return
         if (event.key === Qt.Key_Left) {
-            root.navigatePage("prev")
+            root.navigatePage("next")
             event.accepted = true
         } else if (event.key === Qt.Key_Right) {
-            root.navigatePage("next")
+            root.navigatePage("prev")
             event.accepted = true
         }
     }
@@ -855,8 +855,8 @@ Item {
                         mainText: ""
                         colBackground: root.colSurface
                         colBackgroundHover: root.colPrimaryHover
-                        opacity: root.hasPrevPage() ? 1 : 0.4
-                        onClicked: if (root.hasPrevPage()) root.navigatePage("prev")
+                        opacity: root.hasNextPage() ? 1 : 0.4
+                        onClicked: if (root.hasNextPage()) root.navigatePage("next")
                     }
 
                     RippleButtonWithIcon {
@@ -867,8 +867,8 @@ Item {
                         mainText: ""
                         colBackground: root.colSurface
                         colBackgroundHover: root.colPrimaryHover
-                        opacity: root.hasNextPage() ? 1 : 0.4
-                        onClicked: if (root.hasNextPage()) root.navigatePage("next")
+                        opacity: root.hasPrevPage() ? 1 : 0.4
+                        onClicked: if (root.hasPrevPage()) root.navigatePage("prev")
                     }
 
                     RippleButtonWithIcon {
