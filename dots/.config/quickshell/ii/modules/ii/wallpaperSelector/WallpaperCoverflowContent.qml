@@ -159,6 +159,11 @@ Item {
     onCardWChanged: thumbnailDebounce.restart()
     onCardHChanged: thumbnailDebounce.restart()
     onTotalCountChanged: _scrollToCurrentWallpaper()
+    onCurrentIndexChanged: {
+        const fp = root._filePath(root.currentIndex)
+        const fn = root._fileName(root.currentIndex)
+        if (Wallpapers.isVideoFile(fn)) Wallpapers.ensureVideoThumb(fp)
+    }
     Component.onCompleted: {
         _scrollToCurrentWallpaper()
         updateThumbnails()
@@ -170,6 +175,9 @@ Item {
             root._initialized = false
             root.currentIndex = 0
             root._scrollToCurrentWallpaper()
+            thumbnailDebounce.restart()
+        }
+        function onCountChanged() {
             thumbnailDebounce.restart()
         }
     }
@@ -337,10 +345,33 @@ Item {
                 readonly property string fileName: hasData ? root._fileName(modelIdx) : ""
                 readonly property bool fileIsDir: hasData ? root._fileIsDir(modelIdx) : false
                 readonly property url fileUrl: hasData ? root._fileUrl(modelIdx) : ""
+                readonly property bool isVideo: hasData && Wallpapers.isVideoFile(slot.fileName)
+                readonly property string videoThumbPath: slot.isVideo ? `${Directories.mpvpaperThumbnails}/${slot.fileName}.jpg` : ""
+                property bool videoThumbAvailable: false
+                property int reloadSeq: 0
                 readonly property bool isCurrent: offset === 0
                 readonly property bool isActive: filePath.length > 0
                     && FileUtils.trimFileProtocol(filePath) === FileUtils.trimFileProtocol(String(root.currentWallpaperPath ?? ""))
                 readonly property bool isHovered: root._hoveredSlot === offset && !isCurrent
+
+                FileView {
+                    path: slot.videoThumbPath
+                    watchChanges: slot.isVideo
+                    onLoaded: slot.videoThumbAvailable = true
+                    onFileChanged: {
+                        slot.reloadSeq += 1;
+                        slot.videoThumbAvailable = true;
+                    }
+                    onLoadFailed: error => {
+                        if (error === FileViewError.FileNotFound) slot.videoThumbAvailable = false;
+                    }
+                }
+
+                onFileNameChanged: slot.videoThumbAvailable = false
+
+                Component.onCompleted: {
+                    if (slot.isVideo && !slot.videoThumbAvailable) Wallpapers.ensureVideoThumb(slot.filePath);
+                }
 
                 visible: hasData
                 width: root.cardW
@@ -450,6 +481,64 @@ Item {
                         }
                     }
 
+                    Loader {
+                        id: videoImageLoader
+                        active: slot.isVideo
+                        anchors.fill: parent
+                        anchors.margins: 1
+                        sourceComponent: Item {
+                            property alias frame: frameImage
+                            readonly property bool frameReady: frameImage.status === Image.Ready
+                            readonly property bool showFrame: slot.videoThumbAvailable && frameReady
+
+                            DirectoryIcon {
+                                anchors.fill: parent
+                                fileModelData: ({
+                                    filePath: slot.filePath,
+                                    fileName: slot.fileName,
+                                    fileIsDir: slot.fileIsDir,
+                                    fileUrl: slot.fileUrl
+                                })
+                                opacity: showFrame ? 0 : 1
+                                Behavior on opacity {
+                                    NumberAnimation {
+                                        duration: Appearance.animation.elementMoveFast.duration
+                                        easing.type: Appearance.animation.elementMoveFast.type
+                                        easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                                    }
+                                }
+                            }
+
+                            StyledImage {
+                                id: frameImage
+                                anchors.fill: parent
+                                asynchronous: true
+                                source: slot.videoThumbAvailable
+                                    ? `${slot.videoThumbPath}?r=${slot.reloadSeq}`
+                                    : ""
+                                fillMode: Image.PreserveAspectCrop
+                                clip: true
+                                opacity: showFrame ? 1 : 0
+                                Behavior on opacity {
+                                    NumberAnimation {
+                                        duration: Appearance.animation.elementMoveFast.duration
+                                        easing.type: Appearance.animation.elementMoveFast.type
+                                        easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                                    }
+                                }
+
+                                layer.enabled: true
+                                layer.effect: OpacityMask {
+                                    maskSource: Rectangle {
+                                        width: frameImage.width
+                                        height: frameImage.height
+                                        radius: root.cardRadius
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     Rectangle {
                         anchors.fill: parent
                         radius: root.cardRadius
@@ -497,7 +586,7 @@ Item {
                                     StyledText {
                                         id: typeLabel
                                         anchors.centerIn: parent
-                                        text: slot.fileIsDir ? Translation.tr("Folder") : Translation.tr("Wallpaper")
+                                        text: slot.fileIsDir ? Translation.tr("Folder") : slot.isVideo ? Translation.tr("Video") : Translation.tr("Wallpaper")
                                         font.pixelSize: Appearance.font.pixelSize.smaller
                                         font.weight: Font.DemiBold
                                         color: Appearance.colors.colOnLayer0
@@ -548,6 +637,24 @@ Item {
                                 elide: Text.ElideRight
                                 maximumLineCount: 1
                             }
+                        }
+                    }
+
+                    Rectangle {
+                        visible: slot.isVideo
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.margins: 12
+                        z: 5
+                        width: 34
+                        height: 28
+                        radius: 14
+                        color: Qt.rgba(0, 0, 0, 0.55)
+                        MaterialSymbol {
+                            anchors.centerIn: parent
+                            iconSize: 18
+                            text: "movie"
+                            color: "white"
                         }
                     }
 
@@ -753,6 +860,13 @@ Item {
             onClicked: root.useDarkMode = !root.useDarkMode
             text: root.useDarkMode ? "dark_mode" : "light_mode"
             StyledToolTip { text: Translation.tr("Toggle light/dark mode") }
+        }
+        IconToolbarButton {
+            implicitWidth: height
+            toggled: Wallpapers.showVideos
+            onClicked: Wallpapers.showVideos = !Wallpapers.showVideos
+            text: "movie"
+            StyledToolTip { text: Translation.tr("Switch between images and video / live wallpapers") }
         }
         IconToolbarButton {
             implicitWidth: height

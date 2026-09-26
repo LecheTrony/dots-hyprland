@@ -191,6 +191,15 @@ FocusScope {
                 IconToolbarButton {
                     implicitWidth: Appearance.sizes.baseBarHeight
                     implicitHeight: Appearance.sizes.baseBarHeight
+                    toggled: Wallpapers.showVideos
+                    onClicked: Wallpapers.showVideos = !Wallpapers.showVideos
+                    text: "movie"
+                    StyledToolTip { text: Translation.tr("Show video / live wallpapers (mp4, webm, mkv, avi, mov)") }
+                }
+
+                IconToolbarButton {
+                    implicitWidth: Appearance.sizes.baseBarHeight
+                    implicitHeight: Appearance.sizes.baseBarHeight
                     text: "chevron_left"
                     enabled: carousel.count > 1
                     onClicked: {

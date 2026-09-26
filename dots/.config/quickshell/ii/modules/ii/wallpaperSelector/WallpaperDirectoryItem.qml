@@ -5,12 +5,30 @@ import qs.modules.common.functions
 import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
+import Quickshell.Io
 
 MouseArea {
     id: root
     required property var fileModelData
     property bool isDirectory: fileModelData.fileIsDir
     property bool useThumbnail: Images.isValidImageByName(fileModelData.fileName)
+    property bool isVideo: Wallpapers.isVideoFile(fileModelData.fileName)
+    property string videoThumbPath: root.isVideo ? `${Directories.mpvpaperThumbnails}/${fileModelData.fileName}.jpg` : ""
+    property bool videoThumbAvailable: false
+    property int reloadSeq: 0
+
+    FileView {
+        path: root.videoThumbPath
+        watchChanges: root.isVideo
+        onLoaded: root.videoThumbAvailable = true
+        onFileChanged: {
+            root.reloadSeq += 1;
+            root.videoThumbAvailable = true;
+        }
+        onLoadFailed: error => {
+            if (error === FileViewError.FileNotFound) root.videoThumbAvailable = false;
+        }
+    }
 
     property alias colBackground: background.color
     property alias colText: wallpaperItemName.color
@@ -95,11 +113,58 @@ MouseArea {
                 }
 
                 Loader {
+                    id: videoImageLoader
+                    anchors.fill: parent
+                    active: root.isVideo && root.videoThumbAvailable
+                    sourceComponent: StyledImage {
+                        asynchronous: true
+                        source: `${root.videoThumbPath}?r=${root.reloadSeq}`
+                        fillMode: Image.PreserveAspectCrop
+                        clip: true
+                        opacity: status === Image.Ready ? 1 : 0
+                        Behavior on opacity {
+                            enabled: Appearance.animation.elementMoveFast.duration > 0
+                            NumberAnimation {
+                                duration: Appearance.animation.elementMoveFast.duration
+                                easing.type: Appearance.animation.elementMoveFast.type
+                                easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                            }
+                        }
+
+                        layer.enabled: true
+                        layer.effect: OpacityMask {
+                            maskSource: Rectangle {
+                                width: wallpaperItemImageContainer.width
+                                height: wallpaperItemImageContainer.height
+                                radius: Appearance.rounding.small
+                            }
+                        }
+                    }
+                }
+
+                Loader {
                     id: iconLoader
-                    active: !root.useThumbnail
+                    active: !root.useThumbnail && !(root.isVideo && root.videoThumbAvailable)
                     anchors.fill: parent
                     sourceComponent: DirectoryIcon {
                         fileModelData: root.fileModelData
+                    }
+                }
+
+                Rectangle {
+                    visible: root.isVideo
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.margins: 6
+                    width: 24
+                    height: 20
+                    radius: 10
+                    color: Qt.rgba(0, 0, 0, 0.55)
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+                        iconSize: 14
+                        text: "movie"
+                        color: "white"
                     }
                 }
             }

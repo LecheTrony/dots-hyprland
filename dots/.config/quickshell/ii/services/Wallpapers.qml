@@ -22,9 +22,46 @@ Singleton {
     property url defaultFolder: Qt.resolvedUrl(`${Directories.pictures}/Wallpapers`)
     property alias folderModel: folderModel // Expose for direct binding when needed
     property string searchQuery: ""
-    readonly property list<string> extensions: [ // TODO: add videos
+    readonly property list<string> imageExtensions: [
         "jpg", "jpeg", "png", "webp", "avif", "bmp", "svg"
     ]
+    readonly property list<string> videoExtensions: [
+        "mp4", "webm", "mkv", "avi", "mov"
+    ]
+    property bool showVideos: false
+    readonly property list<string> extensions: root.showVideos ? root.videoExtensions : root.imageExtensions
+
+    function isVideoFile(name: string): bool {
+        const dot = name.lastIndexOf(".");
+        return dot > 0 && root.videoExtensions.includes(name.substring(dot + 1).toLowerCase());
+    }
+
+    property var _videoThumbQueue: []
+    function ensureVideoThumb(videoPath: string) {
+        if (!videoPath || videoPath.length === 0) return;
+        const basename = videoPath.substring(videoPath.lastIndexOf("/") + 1);
+        const thumb = `${Directories.mpvpaperThumbnails}/${basename}.jpg`;
+        if (root._videoThumbQueue.some(req => req[1] === thumb)) return;
+        root._videoThumbQueue.push([videoPath, thumb]);
+        videoThumbProc.pump();
+    }
+    Process {
+        id: videoThumbProc
+        property bool busy: false
+        function pump() {
+            if (videoThumbProc.busy) return;
+            if (root._videoThumbQueue.length === 0) return;
+            videoThumbProc.busy = true;
+            const req = root._videoThumbQueue.shift();
+            videoThumbProc.exec(["bash", "-c",
+                `mkdir -p '${Directories.mpvpaperThumbnails}' && if [ ! -s '${req[1]}' ]; then ffmpeg -hide_banner -loglevel error -y -ss 1 -i '${req[0]}' -vframes 1 '${req[1]}.tmp' && mv -f '${req[1]}.tmp' '${req[1]}'; fi`
+            ]);
+        }
+        onExited: (exitCode, exitStatus) => {
+            videoThumbProc.busy = false;
+            videoThumbProc.pump();
+        }
+    }
     property list<string> wallpapers: [] // List of absolute file paths (without file://)
     readonly property bool thumbnailGenerationRunning: thumbgenProc.running
     property real thumbnailGenerationProgress: 0

@@ -29,6 +29,13 @@ MouseArea {
         }
     }
 
+    Connections {
+        target: Wallpapers.folderModel
+        function onCountChanged() {
+            root.updateThumbnails();
+        }
+    }
+
     function handleFilePasting(event) {
         const currentClipboardEntry = Cliphist.entries[0];
         if (/^\d+\tfile:\/\/\S+/.test(currentClipboardEntry)) {
@@ -387,6 +394,16 @@ MouseArea {
                                 text: root.useDarkMode ? "dark_mode" : "light_mode"
                                 StyledToolTip {
                                     text: Translation.tr("Click to toggle light/dark mode\n(applied when wallpaper is chosen)")
+                                }
+                            }
+
+                            IconToolbarButton {
+                                implicitWidth: height
+                                toggled: Wallpapers.showVideos
+                                onClicked: Wallpapers.showVideos = !Wallpapers.showVideos
+                                text: "movie"
+                                StyledToolTip {
+                                    text: Translation.tr("Show video / live wallpapers (mp4, webm, mkv, avi, mov)")
                                 }
                             }
 
