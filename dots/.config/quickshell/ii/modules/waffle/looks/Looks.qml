@@ -12,6 +12,7 @@ Singleton {
     property QtObject lightColors
     property QtObject colors
     property QtObject radius
+    property QtObject settings
     property QtObject font
     property QtObject transition
     property string iconsPath: `${Directories.assetsPath}/icons/fluent`
@@ -145,6 +146,30 @@ Singleton {
         property int xLarge: 12
     }
 
+    // Settings-window tokens (ported from the iNiR reference): Win11-style
+    // radii/padding plus the ink alpha ladder the cards and nav items use.
+    settings: QtObject {
+        property int radiusSmall: root.dp(4)
+        property int radiusMedium: root.dp(7)
+        property int radiusLarge: root.dp(9)
+        property int radiusXLarge: root.dp(12)
+        property int panelPadding: root.dp(16)
+        readonly property color ink: root.dark
+            ? ColorUtils.mix("#FFFFFF", root.colors.fg, 0.55)
+            : ColorUtils.mix("#000000", root.colors.fg, 0.35)
+        readonly property color stroke: ColorUtils.applyAlpha(ink, root.dark ? 0.15 : 0.11)
+        readonly property color strokeStrong: ColorUtils.applyAlpha(ink, root.dark ? 0.25 : 0.19)
+        readonly property color tile: ColorUtils.applyAlpha(ink, root.dark ? 0.065 : 0.045)
+        readonly property color tileHover: ColorUtils.applyAlpha(ink, root.dark ? 0.125 : 0.075)
+        readonly property color tilePressed: ColorUtils.applyAlpha(ink, root.dark ? 0.19 : 0.115)
+    }
+
+    // Density helper: mirrors the reference's dp() so ported components keep
+    // their original metrics while still honouring the global size scale.
+    function dp(value) {
+        return Math.round(value * (Appearance.fontSizeScale || 1))
+    }
+
     font: QtObject {
         id: font
         property QtObject family: QtObject {
@@ -158,6 +183,7 @@ Singleton {
             property int strongest: Font.Bold
         }
         property QtObject pixelSize: QtObject {
+            property real small: 10
             property real normal: 11
             property real large: 13
             property real larger: 15

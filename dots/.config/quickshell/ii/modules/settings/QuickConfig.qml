@@ -290,6 +290,34 @@ ContentPage {
                     ]
                 }
             }
+
+            ContentSubsection {
+                title: Translation.tr("Panel family")
+
+                ConfigSelectionArray {
+                    currentValue: Config.options.panelFamily
+                    onSelected: newValue => {
+                        Config.options.panelFamily = newValue;
+                    }
+                    options: [
+                        {
+                            displayName: Translation.tr("II"),
+                            icon: "dashboard",
+                            value: "ii"
+                        },
+                        {
+                            displayName: Translation.tr("Waffle"),
+                            icon: "grid_view",
+                            value: "waffle"
+                        },
+                        {
+                            displayName: Translation.tr("ArchEclipse"),
+                            icon: "router",
+                            value: "archeclipse"
+                        }
+                    ]
+                }
+            }
         }
 
         ConfigRow {

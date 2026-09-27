@@ -80,7 +80,7 @@ TabButton {
         ParallelAnimation {
             RippleAnim {
                 target: ripple
-                properties: "implicitWidth,implicitHeight"
+                properties: "rippleWidth,rippleHeight"
                 from: 0
                 to: rippleAnim.radius * 2
             }
@@ -111,12 +111,12 @@ TabButton {
 
         Item {
             id: ripple
-            width: ripple.implicitWidth
-            height: ripple.implicitHeight
+            width: ripple.rippleWidth
+            height: ripple.rippleHeight
             opacity: 0
 
-            property real implicitWidth: 0
-            property real implicitHeight: 0
+            property real rippleWidth: 0
+            property real rippleHeight: 0
             visible: width > 0 && height > 0
 
             Behavior on opacity {

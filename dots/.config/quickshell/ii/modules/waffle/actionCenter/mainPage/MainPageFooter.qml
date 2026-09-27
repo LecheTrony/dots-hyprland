@@ -43,7 +43,7 @@ FooterRectangle {
 
         onClicked: {
             GlobalStates.sidebarLeftOpen = false;
-            Quickshell.execDetached(["qs", "-p", Quickshell.shellPath("settings.qml")]);
+            Quickshell.execDetached(["qs", "-p", Quickshell.shellPath("waffleSettings.qml")]);
         }
 
         contentItem: FluentIcon {
