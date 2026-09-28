@@ -237,6 +237,89 @@ Item {
         }
     }
 
+    component LevelSlider: Item {
+        id: lvl
+
+        property real value: 0
+        property int steps: 20
+        signal moved(real value)
+
+        implicitWidth: 116
+        implicitHeight: 20
+
+        readonly property real shown: Math.round(value * steps) / steps
+
+        Text {
+            id: lvlValue
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            width: 26
+            text: `${Math.round(lvl.shown * 100)}%`
+            color: ArchTheme.muted
+            font.family: ArchTheme.fontFamily
+            font.pixelSize: ArchTheme.fontSizeCaption
+        }
+
+        Rectangle {
+            id: lvlTrack
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: lvlValue.right
+            anchors.leftMargin: 6
+            anchors.right: parent.right
+            height: 4
+            radius: 2
+            color: ArchTheme.surface
+            border.width: 1
+            border.color: ArchTheme.border
+
+            Rectangle {
+                width: lvlTrack.width * lvl.shown
+                height: parent.height
+                radius: parent.radius
+                color: ArchTheme.accent
+
+                Behavior on width {
+                    NumberAnimation { duration: ArchTheme.anim.fastEffects }
+                }
+            }
+        }
+
+        Rectangle {
+            id: lvlHandle
+            width: 10
+            height: 10
+            radius: 5
+            color: lvlHover.hovered || lvlDrag.pressed ? ArchTheme.accent : ArchTheme.mix(ArchTheme.accent, ArchTheme.bg, 0.3)
+            border.width: 1
+            border.color: ArchTheme.border
+            x: Math.max(0, Math.min(lvl.width - width, lvlTrack.x + lvlTrack.width * lvl.shown - width / 2))
+            y: (lvl.height - height) / 2
+        }
+
+        MouseArea {
+            id: lvlDrag
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            preventStealing: true
+
+            function applyTo(mx) {
+                const raw = (mx - lvlTrack.x) / lvlTrack.width;
+                const clamped = Math.max(0, Math.min(1, raw));
+                lvl.moved(Math.round(clamped * lvl.steps) / lvl.steps);
+            }
+
+            onPressed: (event) => applyTo(event.x)
+            onPositionChanged: (event) => {
+                if (pressed)
+                    applyTo(event.x);
+            }
+        }
+
+        HoverHandler {
+            id: lvlHover
+        }
+    }
+
     // ---- content ----------------------------------------------------------
 
     ColumnLayout {
@@ -244,7 +327,7 @@ Item {
         width: parent.width
         spacing: ArchTheme.spacing
 
-        readonly property int count: 4
+        readonly property int count: 5
 
         SectionBox {
             title: Translation.tr("Bar")
@@ -376,6 +459,34 @@ Item {
                 ToggleSwitch {
                     checked: Config.options.appearance.extraBackgroundTint
                     onToggled: Config.options.appearance.extraBackgroundTint = !Config.options.appearance.extraBackgroundTint
+                }
+            }
+        }
+
+        SectionBox {
+            title: Translation.tr("Terminal")
+            iconName: "terminal"
+
+            SettingRow {
+                label: Translation.tr("Background opacity")
+                caption: Translation.tr("Lower values let the blurred desktop show through the terminal")
+
+                LevelSlider {
+                    value: KittyConf.opacity
+                    onMoved: (value) => {
+                        Config.options.terminal.opacity = value;
+                        KittyConf.scheduleWrite();
+                    }
+                }
+            }
+
+            SettingRow {
+                label: Translation.tr("Match colors to wallpaper")
+                caption: Translation.tr("Applies the next time the wallpaper changes")
+
+                ToggleSwitch {
+                    checked: Config.options.appearance.wallpaperTheming.enableTerminal
+                    onToggled: Config.options.appearance.wallpaperTheming.enableTerminal = !Config.options.appearance.wallpaperTheming.enableTerminal
                 }
             }
         }

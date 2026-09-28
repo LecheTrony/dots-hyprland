@@ -615,5 +615,18 @@
     "Panel family": "Panel family",
     "II": "II",
     "Waffle": "Waffle",
-    "ArchEclipse": "ArchEclipse"
+    "ArchEclipse": "ArchEclipse",
+    "Colors": "Colors",
+    "Background opacity": "Background opacity",
+    "How solid the terminal background is. Lower values let more of the blurred desktop show through.": "How solid the terminal background is. Lower values let more of the blurred desktop show through.",
+    "The blur behind the terminal is drawn by the compositor and is already enabled for kitty. At 100% the background is fully opaque, so no blur is visible.": "The blur behind the terminal is drawn by the compositor and is already enabled for kitty. At 100% the background is fully opaque, so no blur is visible.",
+    "These settings are written to kitty, but your launcher is set to \"%1\". Change it in Services to have them apply.": "These settings are written to kitty, but your launcher is set to \"%1\". Change it in Services to have them apply.",
+    "Match terminal colors to wallpaper": "Match terminal colors to wallpaper",
+    "Applies the next time the wallpaper changes. Requires shell and utilities theming to be enabled.": "Applies the next time the wallpaper changes. Requires shell and utilities theming to be enabled.",
+    "Transparency, blur and wallpaper colors for the terminal.": "Transparency, blur and wallpaper colors for the terminal.",
+    "Lower values let the blurred desktop show through the terminal": "Lower values let the blurred desktop show through the terminal",
+    "Match colors to wallpaper": "Match colors to wallpaper",
+    "Material You sidebars, launcher and bar": "Material You sidebars, launcher and bar",
+    "Compact grid bar with its own start menu": "Compact grid bar with its own start menu",
+    "Arch themed bar with the settings card": "Arch themed bar with the settings card"
 }

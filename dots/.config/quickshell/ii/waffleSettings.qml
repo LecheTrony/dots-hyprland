@@ -57,6 +57,13 @@ ApplicationWindow {
             component: Quickshell.shellPath("modules/settings/InterfaceConfig.qml")
         },
         {
+            name: Translation.tr("Terminal"),
+            icon: "terminal",
+            description: Translation.tr("Transparency, blur and wallpaper colors for the terminal."),
+            keywords: ["kitty", "opacity", "transparent", "blur", "colors"],
+            component: Quickshell.shellPath("modules/settings/TerminalConfig.qml")
+        },
+        {
             name: Translation.tr("Services"),
             icon: "settings",
             keywords: ["audio", "network", "bluetooth", "battery", "weather"],

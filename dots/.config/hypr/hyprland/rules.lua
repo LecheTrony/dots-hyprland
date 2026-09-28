@@ -3,8 +3,11 @@
 -- Disable blur for xwayland context menus
 hl.window_rule({match = {class = "^()$", title = "^()$" },                   no_blur = true })
 
--- Disable blur for every window
-hl.window_rule({match = {class = ".*" }, no_blur = true })
+-- Disable blur for every window except the terminals. Window rules have no
+-- positive "blur" effect (only no_blur), so blur cannot be re-enabled by a
+-- later rule: the class has to be excluded here. Kitty is translucent via
+-- background_opacity in kitty.conf, so the compositor blur is visible.
+hl.window_rule({match = {class = "^(?!kitty$).*$" }, no_blur = true })
 
 -- Floating
 hl.window_rule({match = {title = "^(Open File)(.*)$" },                      center = true})

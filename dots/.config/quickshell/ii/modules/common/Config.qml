@@ -628,6 +628,14 @@ Singleton {
                 property string theme: "freedesktop"
             }
 
+            property JsonObject terminal: JsonObject {
+                // Opacity of the terminal background. 1 is fully opaque, lower
+                // values let the compositor blur behind the window show
+                // through. Applied through the override file that kitty.conf
+                // includes last, so the running terminal picks it up.
+                property real opacity: 0.9
+            }
+
             property JsonObject time: JsonObject {
                 // https://doc.qt.io/qt-6/qtime.html#toString
                 property string format: "hh:mm"

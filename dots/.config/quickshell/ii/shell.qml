@@ -21,6 +21,7 @@ ShellRoot {
 
     // Stuff for every panel family
     ReloadPopup {}
+    PanelFamilyPicker {}
 
     Component.onCompleted: {
         MaterialThemeLoader.reapplyTheme()
@@ -30,15 +31,13 @@ ShellRoot {
         Cliphist.refresh()
         Wallpapers.load()
         Updates.load()
+        KittyConf.load()
     }
 
 
     // Panel families
-    property list<string> families: ["ii", "waffle", "archeclipse"]
     function cyclePanelFamily() {
-        const currentIndex = families.indexOf(Config.options.panelFamily)
-        const nextIndex = (currentIndex + 1) % families.length
-        Config.options.panelFamily = families[nextIndex]
+        Config.options.panelFamily = PanelFamilies.next(Config.options.panelFamily)
     }
 
     component PanelFamilyLoader: LazyLoader {

@@ -749,5 +749,18 @@
     "Panel family": "Familia de panel",
     "II": "II",
     "Waffle": "Waffle",
-    "ArchEclipse": "ArchEclipse"
+    "ArchEclipse": "ArchEclipse",
+    "Colors": "Colores",
+    "Background opacity": "Opacidad del fondo",
+    "How solid the terminal background is. Lower values let more of the blurred desktop show through.": "Qué tan sólido es el fondo de la terminal. Valores bajos dejan ver más el escritorio desenfocado.",
+    "The blur behind the terminal is drawn by the compositor and is already enabled for kitty. At 100% the background is fully opaque, so no blur is visible.": "El desenfoque detrás de la terminal lo dibuja el compositor y ya está activado para kitty. Al 100% el fondo es totalmente opaco, así que no se aprecia.",
+    "These settings are written to kitty, but your launcher is set to \"%1\". Change it in Services to have them apply.": "Estos ajustes se escriben en kitty, pero tu lanzador está configurado como \"%1\". Cámbialo en Services para que se apliquen.",
+    "Match terminal colors to wallpaper": "Igualar los colores de la terminal al fondo de pantalla",
+    "Applies the next time the wallpaper changes. Requires shell and utilities theming to be enabled.": "Se aplica la próxima vez que cambie el fondo de pantalla. Requiere que el tema del shell y utilidades esté activado.",
+    "Transparency, blur and wallpaper colors for the terminal.": "Transparencia, desenfoque y colores de fondo para la terminal.",
+    "Lower values let the blurred desktop show through the terminal": "Valores bajos dejan ver el escritorio desenfocado a través de la terminal",
+    "Match colors to wallpaper": "Igualar colores al fondo de pantalla",
+    "Material You sidebars, launcher and bar": "Barra, lanzador y barras laterales de Material You",
+    "Compact grid bar with its own start menu": "Barra compacta de cuadrícula con su propio menú de inicio",
+    "Arch themed bar with the settings card": "Barra con tema de Arch y su tarjeta de ajustes"
 }
