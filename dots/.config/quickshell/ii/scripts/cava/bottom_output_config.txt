@@ -2,7 +2,7 @@
 mode = bars
 framerate = 60
 autosens = 1
-bars = 64
+bars = 192
 
 [output]
 method = raw

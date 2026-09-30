@@ -26,11 +26,12 @@ Singleton {
 
     readonly property real maxValue: 1000
 
-    // Geometry of the bottom strip. Kept next to the data so a single edit
-    // moves both the window height and the bar spacing consistently.
-    readonly property real stripHeight: 64
-    readonly property real barStep: 6
-    readonly property real barWidth: 3
+    // Geometry of the bottom strip. The bar step is not fixed here: it is
+    // derived from the surface width at paint time so the bars always span the
+    // full screen on any resolution. Only the height and the fill ratio are
+    // tunable.
+    readonly property real stripHeight: 150
+    readonly property real barFill: 0.55
 
     Process {
         id: cava

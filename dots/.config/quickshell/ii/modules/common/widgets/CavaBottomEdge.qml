@@ -24,8 +24,6 @@ Variants {
         // The delegate is a separate scope, so the geometry lives in the visualiser
         // service instead of on the Variants root.
         readonly property real stripHeight: CavaVisualizer.stripHeight
-        readonly property real barStep: CavaVisualizer.barStep
-        readonly property real barWidth: CavaVisualizer.barWidth
 
         screen: modelData
         exclusionMode: ExclusionMode.Ignore
@@ -141,11 +139,19 @@ Variants {
 
                     const center = width / 2;
                     const maxHeight = root.stripHeight;
-                    const step = root.barStep;
-                    const barWidth = root.barWidth;
-                    const radius = barWidth / 2;
                     const half = Math.ceil(points.length / 2);
                     const tint = Appearance.colors.colPrimary;
+
+                    // Spread the mirrored bars across the full surface instead
+                    // of a fixed step, so the strip covers the whole bottom on
+                    // any resolution. A quarter slot is left as the gap between
+                    // neighbours, which keeps the bars visually separated.
+                    const step = width / (half * 2);
+                    const barWidth = step * CavaVisualizer.barFill;
+                    const radius = barWidth / 2;
+                    // Glow spread scales with the bar so it stays proportional
+                    // once the bars are this wide.
+                    const glow = Math.max(2, step * 0.28);
 
                     for (let i = 0; i < half; i++) {
                         // Slight gamma so quiet passages still move instead of
@@ -163,7 +169,7 @@ for (const x of [left, right]) {
                         // Wide translucent pass first for the glow, then the
                         // solid bar, which is cheaper than a blur effect.
                         ctx.fillStyle = Qt.rgba(tint.r, tint.g, tint.b, 0.16);
-                        roundedBar(ctx, x - 3, y - 3, barWidth + 6, barHeight + 3, radius + 3);
+                        roundedBar(ctx, x - glow / 2, y - glow / 2, barWidth + glow, barHeight + glow / 2, radius + glow / 2);
                         ctx.fill();
 
                         ctx.fillStyle = Qt.rgba(tint.r, tint.g, tint.b, 0.95);
