@@ -9,6 +9,7 @@
 import "modules/common"
 import "services"
 import "panelFamilies"
+import qs.modules.common.widgets
 
 import QtQuick
 import QtQuick.Window
@@ -22,6 +23,7 @@ ShellRoot {
     // Stuff for every panel family
     ReloadPopup {}
     PanelFamilyPicker {}
+    CavaBottomEdge {}
 
     Component.onCompleted: {
         MaterialThemeLoader.reapplyTheme()
