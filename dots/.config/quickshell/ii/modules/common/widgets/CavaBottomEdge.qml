@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Window
 import Quickshell
 import Quickshell.Wayland
 import qs.services
@@ -42,6 +43,13 @@ Variants {
         // only the bars themselves are on screen.
         color: "transparent"
         implicitHeight: root.stripHeight
+
+        // A layer surface swallows pointer events by default, which would block
+        // whatever sits behind the strip. An empty Region makes the whole
+        // window click-through, so the bars stay purely visual.
+        mask: Region {
+            item: null
+        }
 
         Loader {
             id: opacityLoader
