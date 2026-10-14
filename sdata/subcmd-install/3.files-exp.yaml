@@ -6,6 +6,7 @@
 # - `hard-backup`: If target file exists, create backup by renaming it to `*.old.<n>` where `<n>` is a number increment from 1 to prevent backup gets overwritten when running twice. (Keep in mind that this script must be idempotent.) Also must compare the actual file content by using MD5 HASH value to prevent generating lots of `*.old.<n>`s when runnng multiple times. Do not create backup but skip coyping when source and target HASH values are exactly the same.
 # - `skip`: Skip this step
 # - `skip-if-exists`: Skip this step if target exists
+# - `ignore-existing`: Copy only the files that do not exist in the destination yet (rsync --ignore-existing).
 version: "1.0"
 user_preferences:
   shell: "fish" # fish | zsh
@@ -56,7 +57,7 @@ patterns:
     mode: "soft-backup"
   - from: "dots/.config/hypr/custom"
     to: "$XDG_CONFIG_HOME/hypr/custom"
-    mode: "skip-if-exists"
+    mode: "ignore-existing"
   - from: "dots/.local/share/icons"
     to: "$XDG_DATA_HOME/icons"
     mode: "soft"

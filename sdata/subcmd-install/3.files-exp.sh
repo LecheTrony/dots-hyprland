@@ -271,6 +271,15 @@ for pattern in "${patterns[@]}"; do
         v cp -r "$from" "$to"
       fi
       ;;
+    "ignore-existing")
+      # Copy only files that do not exist in the destination yet.
+      # Useful for user-editable dirs that may be pre-created by earlier steps.
+      if [[ -d "$from" ]]; then
+        v rsync -av --ignore-existing "${excludes[@]}" "$from/" "$to/"
+      else
+        v rsync -av --ignore-existing "${excludes[@]}" "$from" "$to"
+      fi
+      ;;
     *)
       echo "Unknown mode: $mode"
       ;;

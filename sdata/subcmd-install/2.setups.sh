@@ -59,6 +59,9 @@ elif [[ ! -z $(openrc --version) ]]; then
 elif [[ ! -z $(dinitctl --version 2>/dev/null) ]]; then
   # Modules loading
   v bash -c "echo i2c-dev | sudo tee -a /etc/modules"
+  # Ensure the custom config dir exists before appending to it, because it is
+  # created in step 3 which runs after this step.
+  v mkdir -p "$HOME/.config/hypr/custom"
   v bash -c "echo -e '-- Fix user Ydotool not working\nhl.env(\"YDOTOOL_SOCKET\", \"/tmp/.ydotool_socket\")' | tee -a \$HOME/.config/hypr/custom/env.lua"
   v bash -c "echo -e 'type = process\ncommand = /usr/bin/ydotoold\nlogfile = /var/log/dinit/ydotool.log\ndepends-on = dbus\nsmooth-recovery = true' | sudo tee /etc/dinit.d/ydotool"
   

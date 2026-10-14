@@ -15,6 +15,35 @@
 
 > This project is in **continuous progress**; it is used as a backup and to keep track of the customizations.
 
+### Requirements
+
+- **Artix Linux** (x86_64) with the **dinit** init system. This fork is tailored for dinit; other inits (OpenRC/runit) are untested.
+- A **non-root user with `sudo`** privileges (do not run the installer as root).
+- An **internet connection**.
+- Around **5 GB of free disk space**: dependencies are built from source (including `quickshell`), which takes a while.
+- `base-devel`, `git` and `yay` — the installer bootstraps them automatically if they are missing.
+- The **Artix official repositories + AUR** enabled.
+- Working graphics drivers. Start Hyprland from a TTY or a display manager; **do not select the UWSM session** at login.
+
+> Artix is detected automatically as Arch-based, so no extra `os-release` file is needed.
+
+### Installation
+
+```bash
+git clone https://github.com/LecheTrony/dots-hyprland.git ~/dots-hyprland
+cd ~/dots-hyprland
+./setup install
+```
+
+The installer is interactive:
+1. **Dependencies** — builds and installs several packages locally.
+2. **Setups** — permissions and services (dinit: `ydotool`, `bluetooth`, PipeWire, adds your user to `video,i2c,input`, loads `i2c-dev`).
+3. **Files** — copies the configuration files; anything that clashes is backed up to `~/ii-original-dots-backup`.
+
+Useful flags: `-f/--force` (no confirmations), `--skip-allsetups`, `--skip-allfiles`, `--skip-backup`, `--fontset <set>`, `--exp-files` (experimental YAML-based copy). See `./setup install -h` for the full list.
+
+When it finishes, log out and start Hyprland again. Logging out also applies the new `video,i2c,input` group membership.
+
 ### Differences from upstream
 
 - **Display panel**: new monitor configuration panel with draggable preview and click-to-select, plus utility scripts (`monitor_caps.py`, `monitor_configurator.py`) managed from the left sidebar.
@@ -30,6 +59,8 @@
 - **Manga reader (adapted from ArchEclipse, for manga-oni.com)**: a "Manga" tab in the left sidebar that browses the newest updates on **manga-oni.com** (cover art, synopsis, status, genres, years), searches by title and reads chapters page by page (or with the arrow keys) inside a built-in webp reader with prefetching and a local disk cache. Two display modes despite the sidebar: a "big mode" expands the sidebar and shows the pages two by two in manga (RTL) order — the current page on the right, the next one on the left, advancing to the left, wide double-pages shown alone at full width — and a "fullscreen mode" covers the whole screen with only the manga (arrow keys to read, `Esc` to exit) opening at the page you were on; links open in the browser. Toggle it with `sidebar.manga.enable`.
 - **Countdown timer (right sidebar)**: the "Timer" widget at the bottom of the right sidebar gained a third tab — **Countdown**, next to Pomodoro and Stopwatch. It is a countdown ring with quick presets (`1/5/10/25/60m`) and custom **Min/Sec** steppers, plus Start/Pause/Resume/Reset; when it reaches zero it fires a desktop notification and plays an alarm sound. Its state survives shell restarts.
 - **Anime side panel (right sidebar)**: a new "Anime" tab in the bottom widget group of the right sidebar shows a chosen anime image with rounded corners. From the left sidebar "Anime" (Booru) tab, open any image's `⋮` menu and press **"Set as side panel image"**: it downloads the image at full resolution, downscales it to `~/Pictures/homework/sidepanel-anime.png` and fires a desktop notification. The panel refreshes automatically when the file changes, has a manual Refresh button, and shows a placeholder with instructions until you set an image. (The `⋮` menu was also rewritten as an overlay popup so every option stays clickable and only one menu is open at a time.)
+- **Artix / dinit support**: the installer recognizes Artix as Arch-based (no `os-release` workaround needed), sets up dinit services (`ydotool`, `bluetooth`, PipeWire, `userspawn`), and creates `~/.config/hypr/custom` before writing to it.
+- **Qt 6.12 compatibility**: backports the upstream MOC-include fix so `quickshell` builds against Qt 6.12 (`quickshell-qt612.patch`, applied automatically).
 
 ### Main branch
 
@@ -59,6 +90,35 @@ GPL-3.0 (same as the original project).
 
 > Este proyecto está en **progreso continuo**; se usa como respaldo y para llevar el registro de los ajustes.
 
+### Requisitos
+
+- **Artix Linux** (x86_64) con el sistema de init **dinit**. Este fork está adaptado para dinit; otros inits (OpenRC/runit) no están probados.
+- Un **usuario no-root con privilegios de `sudo`** (no ejecutes el instalador como root).
+- **Conexión a internet**.
+- Alrededor de **5 GB de espacio libre**: las dependencias se compilan desde el código (incluido `quickshell`), lo que tarda un rato.
+- `base-devel`, `git` y `yay` — el instalador los prepara automáticamente si faltan.
+- Los **repositorios oficiales de Artix + AUR** habilitados.
+- Controladores gráficos funcionando. Inicia Hyprland desde una TTY o un display manager; **no elijas la sesión UWSM** al iniciar sesión.
+
+> Artix se detecta automáticamente como base Arch, así que no hace falta ningún archivo `os-release` extra.
+
+### Instalación
+
+```bash
+git clone https://github.com/LecheTrony/dots-hyprland.git ~/dots-hyprland
+cd ~/dots-hyprland
+./setup install
+```
+
+El instalador es interactivo:
+1. **Dependencias** — compila e instala varios paquetes localmente.
+2. **Ajustes** — permisos y servicios (dinit: `ydotool`, `bluetooth`, PipeWire, añade tu usuario a `video,i2c,input`, carga `i2c-dev`).
+3. **Archivos** — copia las configuraciones; lo que entre en conflicto se respalda en `~/ii-original-dots-backup`.
+
+Opciones útiles: `-f/--force` (sin confirmaciones), `--skip-allsetups`, `--skip-allfiles`, `--skip-backup`, `--fontset <set>`, `--exp-files` (copiado experimental basado en YAML). Mira `./setup install -h` para la lista completa.
+
+Al terminar, cierra sesión y vuelve a iniciar Hyprland. Cerrar sesión también aplica la nueva pertenencia a los grupos `video,i2c,input`.
+
 ### Diferencias respecto a upstream
 
 - **Panel de pantallas (Display)**: nuevo panel de configuración de monitores con vista previa arrastrable y selección por clic, más scripts de utilidad (`monitor_caps.py`, `monitor_configurator.py`) gestionados desde la barra lateral.
@@ -74,6 +134,8 @@ GPL-3.0 (same as the original project).
 - **Lector de manga (adaptado de ArchEclipse, para manga-oni.com)**: una pestaña "Manga" en la barra lateral izquierda que explora las últimas actualizaciones de **manga-oni.com** (carátulas, sinopsis, estado, géneros, año), busca por título y lee capítulos página a página (o con las flechas del teclado) en un lector webp integrado con precarga y caché local en disco. Dos modos de pantalla además de la barra: un "modo grande" estira la barra y muestra las páginas de 2 en 2 en orden de manga (RTL) — la página actual a la derecha, la siguiente a la izquierda, avanzando hacia la izquierda, con las dobles páginas anchas mostradas solas a lo ancho — y un "modo pantalla completa" que cubre toda la pantalla solo con el manga (flechas para leer, `Esc` para salir) abriendo justo en la página en la que ibas; los enlaces abren en el navegador. Se activa con `sidebar.manga.enable`.
 - **Temporizador de cuenta regresiva (barra lateral derecha)**: el widget "Timer" de la parte inferior de la barra lateral derecha ganó una tercera pestaña — **Countdown**, junto a Pomodoro y Cronómetro. Es un anillo de cuenta regresiva con presets rápidos (`1/5/10/25/60m`) y ajustadores personalizados de **Min/Sec**, además de botones Start/Pause/Resume/Reset; al llegar a cero lanza una notificación de escritorio y suena una alarma. Su estado sobrevive al reinicio del shell.
 - **Panel de anime (barra lateral derecha)**: una nueva pestaña "Anime" en el grupo de widgets inferior de la barra lateral derecha muestra la imagen de anime elegida con esquinas redondeadas. Desde la pestaña "Anime" (Booru) de la barra lateral izquierda, abre el menú `⋮` de cualquier imagen y pulsa **"Set as side panel image"**: descarga la imagen a resolución completa, la reduce a `~/Pictures/homework/sidepanel-anime.png` y lanza una notificación de escritorio. El panel se refresca solo cuando cambia el archivo, tiene un botón manual de refrescar y muestra un placeholder con instrucciones hasta que fijes una imagen. (El menú `⋮` también se reescribió como un popup superpuesto para que todas sus opciones sean clicables y solo quede un menú abierto a la vez.)
+- **Soporte Artix / dinit**: el instalador reconoce Artix como base Arch (sin necesidad del truco de `os-release`), configura los servicios de dinit (`ydotool`, `bluetooth`, PipeWire, `userspawn`) y crea `~/.config/hypr/custom` antes de escribir en él.
+- **Compatibilidad con Qt 6.12**: incluye el parche upstream de MOC-include para que `quickshell` compile contra Qt 6.12 (`quickshell-qt612.patch`, aplicado automáticamente).
 
 ### Rama principal
 

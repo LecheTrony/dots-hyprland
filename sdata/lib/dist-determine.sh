@@ -88,6 +88,11 @@ export OS_DISTRO_ID_LIKE=$(awk -F'=' '/^ID_LIKE=/ { gsub(/["\x27]/,"",$2); print
 if [[ "$OS_DISTRO_ID" =~ ^(arch|endeavouros|cachyos)$ ]]; then
   OS_GROUP_ID="arch"
   print_os_group_id_functions=(print_os_group_id)
+elif [[ "$OS_DISTRO_ID" == "artix" ]]; then
+  # Artix is Arch-based but uses another init system (dinit/openrc/runit).
+  # The "arch" group works, and setups.sh/tailored deps handle the init system.
+  OS_GROUP_ID="arch"
+  print_os_group_id_functions=(print_os_group_id{,_unofficial})
 elif [[ "$OS_DISTRO_ID_LIKE" == "arch" ]]; then
   OS_GROUP_ID="arch"
   print_os_group_id_functions=(print_os_group_id{,_alike})

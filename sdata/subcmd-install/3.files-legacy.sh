@@ -72,7 +72,10 @@ case "${SKIP_HYPRLAND}" in
       v bash -c "printf \"# For fedora to setup polkit\nexec-once = /usr/libexec/kf6/polkit-kde-authentication-agent-1\n\" >> ${XDG_CONFIG_HOME}/hypr/hyprland/execs.conf"
     fi
 
-    install_dir__ignore_existing "dots/.config/hypr/custom" "${XDG_CONFIG_HOME}/hypr/custom"
+    # The target dir may already exist (e.g. created in step 2 to append the
+    # dinit ydotool env). Use ignore-existing so we add missing template files
+    # without overwriting the user's customizations.
+    v rsync_dir__ignore_existing "dots/.config/hypr/custom" "${XDG_CONFIG_HOME}/hypr/custom"
     ;;
 esac
 
