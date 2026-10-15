@@ -443,6 +443,7 @@ MouseArea {
                         }
 
                         ToolbarPairedFab {
+                            anchors.verticalCenter: parent.verticalCenter
                             iconText: "close"
                             onClicked: GlobalStates.wallpaperSelectorOpen = false;
                             StyledToolTip {

@@ -23,7 +23,6 @@ ShellRoot {
     // Stuff for every panel family
     ReloadPopup {}
     PanelFamilyPicker {}
-    CavaBottomEdge {}
 
     Component.onCompleted: {
         MaterialThemeLoader.reapplyTheme()

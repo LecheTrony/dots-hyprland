@@ -215,6 +215,7 @@ PanelWindow {
         }
 
         ToolbarPairedFab {
+            anchors.verticalCenter: parent.verticalCenter
             iconText: "close"
             onClicked: root.dismiss()
             StyledToolTip {

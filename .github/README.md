@@ -61,6 +61,7 @@ When it finishes, log out and start Hyprland again. Logging out also applies the
 - **Anime side panel (right sidebar)**: a new "Anime" tab in the bottom widget group of the right sidebar shows a chosen anime image with rounded corners. From the left sidebar "Anime" (Booru) tab, open any image's `⋮` menu and press **"Set as side panel image"**: it downloads the image at full resolution, downscales it to `~/Pictures/homework/sidepanel-anime.png` and fires a desktop notification. The panel refreshes automatically when the file changes, has a manual Refresh button, and shows a placeholder with instructions until you set an image. (The `⋮` menu was also rewritten as an overlay popup so every option stays clickable and only one menu is open at a time.)
 - **Artix / dinit support**: the installer recognizes Artix as Arch-based (no `os-release` workaround needed), sets up dinit services (`ydotool`, `bluetooth`, PipeWire, `userspawn`), and creates `~/.config/hypr/custom` before writing to it.
 - **Qt 6.12 compatibility**: backports the upstream MOC-include fix so `quickshell` builds against Qt 6.12 (`quickshell-qt612.patch`, applied automatically).
+- **Desktop widgets (adapted from end4-pC)**: a widget layer on the desktop with an enable/disable menu in Settings → Widgets (Super+I). Widgets can be dragged, resized and snapped, and include Calendar, Weather, Clock, Custom text, Images (custom image / image card / sticker / image converter, with a file picker), To-Do, Notes, Resources, Timers, World clock, Media, User card and a **Cava visualizer**. Widgets are locked/unlocked from the settings page; enabling one that would overlap another cascades its position automatically.
 
 ### Main branch
 
@@ -76,6 +77,7 @@ When it finishes, log out and start Hyprland again. Logging out also applies the
 - [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) — base project / upstream.
 - [snowarch/iNiR](https://github.com/snowarch/iNiR) — wallpaper selector adaptation source (coverflow carousel and skewed launcher list), animated wallpaper transitions (crossfade / fade-through / zoom / slide / push / wipe + random), and the YT Music / Innertune player port (sidebar "Music" tab with search, playlists, queue and player widgets).
 - [AymanLyesri/ArchEclipse](https://github.com/AymanLyesri/ArchEclipse) — the manga reader tab (sidebar "Manga" tab with its reader widgets and the JSON provider interface) is adapted from the ArchEclipse manga viewer; the `manga-oni.com` provider (scraper script under `scripts/manga/`) is a new implementation for this repo.
+- [pctrade/end4-pC](https://github.com/pctrade/end4-pC) — the desktop widgets port (the widget canvas plus the Calendar, Weather, Clock, Custom text, Images, To-Do, Notes, Resources, Timers, World clock, Media, User card and Visualizer widgets, and the "Widgets" settings page) is adapted from this fork.
 
 ### License
 
@@ -136,6 +138,7 @@ Al terminar, cierra sesión y vuelve a iniciar Hyprland. Cerrar sesión también
 - **Panel de anime (barra lateral derecha)**: una nueva pestaña "Anime" en el grupo de widgets inferior de la barra lateral derecha muestra la imagen de anime elegida con esquinas redondeadas. Desde la pestaña "Anime" (Booru) de la barra lateral izquierda, abre el menú `⋮` de cualquier imagen y pulsa **"Set as side panel image"**: descarga la imagen a resolución completa, la reduce a `~/Pictures/homework/sidepanel-anime.png` y lanza una notificación de escritorio. El panel se refresca solo cuando cambia el archivo, tiene un botón manual de refrescar y muestra un placeholder con instrucciones hasta que fijes una imagen. (El menú `⋮` también se reescribió como un popup superpuesto para que todas sus opciones sean clicables y solo quede un menú abierto a la vez.)
 - **Soporte Artix / dinit**: el instalador reconoce Artix como base Arch (sin necesidad del truco de `os-release`), configura los servicios de dinit (`ydotool`, `bluetooth`, PipeWire, `userspawn`) y crea `~/.config/hypr/custom` antes de escribir en él.
 - **Compatibilidad con Qt 6.12**: incluye el parche upstream de MOC-include para que `quickshell` compile contra Qt 6.12 (`quickshell-qt612.patch`, aplicado automáticamente).
+- **Widgets de escritorio (adaptados de end4-pC)**: una capa de widgets sobre el escritorio con un menú para activarlos/desactivarlos en Ajustes → Widgets (Super+I). Los widgets se pueden arrastrar, redimensionar y ajustar (snap), e incluyen Calendario, Clima, Reloj, Texto personalizado, Imágenes (imagen personalizada / tarjeta de imagen / sticker / conversor de imagen, con selector de archivo), To-Do, Notas, Recursos, Temporizadores, Reloj mundial, Media, Tarjeta de usuario y un **visualizador de cava**. Los widgets se bloquean/desbloquean desde la página de Ajustes; al activar uno que se solaparía con otro, su posición se desplaza automáticamente (cascada).
 
 ### Rama principal
 
@@ -151,6 +154,7 @@ Al terminar, cierra sesión y vuelve a iniciar Hyprland. Cerrar sesión también
 - [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) — proyecto base / upstream.
 - [snowarch/iNiR](https://github.com/snowarch/iNiR) — fuente de la adaptación de los selectores de fondo (carrusel coverflow y lista launcher sesgada), de las transiciones animadas de fondo (crossfade / fade-through / zoom / slide / push / wipe + random) y del port del reproductor de YT Music / Innertune (pestaña "Music" de la barra lateral con búsqueda, playlists, cola y widgets de reproducción).
 - [AymanLyesri/ArchEclipse](https://github.com/AymanLyesri/ArchEclipse) — de aquí se adaptó la pestaña de lectura de manga (pestaña "Manga" de la barra lateral con sus widgets de lector y la interfaz del proveedor JSON) tomada del visor de manga de ArchEclipse; el proveedor de `manga-oni.com` (script de scraping en `scripts/manga/`) es una implementación nueva para este repo.
+- [pctrade/end4-pC](https://github.com/pctrade/end4-pC) — de aquí se adaptó el port de los widgets de escritorio (el canvas de widgets más los widgets Calendario, Clima, Reloj, Texto personalizado, Imágenes, To-Do, Notas, Recursos, Temporizadores, Reloj mundial, Media, Tarjeta de usuario y Visualizador, y la página de Ajustes "Widgets").
 
 ### Licencia
 

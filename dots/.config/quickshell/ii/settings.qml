@@ -40,9 +40,9 @@ ApplicationWindow {
             component: "modules/settings/BarConfig.qml"
         },
         {
-            name: Translation.tr("Background"),
-            icon: "texture",
-            component: "modules/settings/BackgroundConfig.qml"
+            name: Translation.tr("Widgets"),
+            icon: "widgets",
+            component: "modules/settings/WidgetsConfig.qml"
         },
         {
             name: Translation.tr("Interface"),

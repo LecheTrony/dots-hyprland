@@ -45,6 +45,13 @@ Singleton {
         return Math.floor(Date.now() / 10);
     }
 
+    function formatSeconds(totalSeconds) {
+        const s = Math.max(0, Math.round(totalSeconds));
+        const m = Math.floor(s / 60);
+        const sec = s % 60;
+        return `${m}:${sec.toString().padStart(2, "0")}`;
+    }
+
     // Pomodoro
     function refreshPomodoro() {
         // Work <-> break ?
@@ -198,5 +205,22 @@ Singleton {
         Persistent.states.timer.countdown.running = false;
         Persistent.states.timer.countdown.start = getCurrentTimeInSeconds();
         countdownSecondsLeft = root.countdownDuration;
+    }
+
+    // Adds minutes to the countdown. Works whether paused or running.
+    function addCountdownMinutes(minutes) {
+        const addSeconds = minutes * 60;
+        if (root.countdownRunning) {
+            Persistent.states.timer.countdown.duration += addSeconds;
+        } else {
+            Persistent.states.timer.countdown.duration = (Persistent.states.timer.countdown.duration ?? 0) + addSeconds;
+            countdownSecondsLeft = Persistent.states.timer.countdown.duration;
+        }
+    }
+
+    function resetCountdown() {
+        Persistent.states.timer.countdown.running = false;
+        Persistent.states.timer.countdown.duration = 0;
+        countdownSecondsLeft = 0;
     }
 }
