@@ -18,7 +18,18 @@ Singleton {
 	id: root;
 	property list<MprisPlayer> players: Mpris.players.values.filter(player => isRealPlayer(player));
 	property MprisPlayer trackedPlayer: null;
-	property MprisPlayer activePlayer: trackedPlayer ?? Mpris.players.values[0] ?? null;
+	// Prefer a player that is actually playing over a paused one. This avoids a
+	// paused background player (e.g. a browser) becoming "active" and hiding the
+	// music that is currently playing.
+	property MprisPlayer activePlayer: {
+		if (trackedPlayer?.isPlaying) return trackedPlayer;
+		const list = Mpris.players.values;
+		for (let i = 0; i < list.length; ++i) {
+			const p = list[i];
+			if (p && p.isPlaying && isRealPlayer(p)) return p;
+		}
+		return trackedPlayer ?? Mpris.players.values[0] ?? null;
+	}
 	signal trackChanged(reverse: bool);
 
 	property bool __reverse: false;
@@ -50,7 +61,7 @@ Singleton {
 			target: modelData;
 
 			Component.onCompleted: {
-				if (root.trackedPlayer == null || modelData.isPlaying) {
+				if (isRealPlayer(modelData) && (root.trackedPlayer == null || modelData.isPlaying)) {
 					root.trackedPlayer = modelData;
 				}
 			}
@@ -58,20 +69,28 @@ Singleton {
 			Component.onDestruction: {
 				if (root.trackedPlayer == null || !root.trackedPlayer.isPlaying) {
 					for (const player of Mpris.players.values) {
-						if (player.playbackState.isPlaying) {
+						if (isRealPlayer(player) && player.playbackState.isPlaying) {
 							root.trackedPlayer = player;
 							break;
 						}
 					}
 
-					if (trackedPlayer == null && Mpris.players.values.length != 0) {
-						trackedPlayer = Mpris.players.values[0];
+					if (trackedPlayer == null) {
+						for (const player of Mpris.players.values) {
+							if (isRealPlayer(player)) {
+								trackedPlayer = player;
+								break;
+							}
+						}
 					}
 				}
 			}
 
 			function onPlaybackStateChanged() {
-				if (root.trackedPlayer !== modelData) root.trackedPlayer = modelData;
+				// Only hand the "active player" over to a player that is actually playing.
+				// Otherwise pausing/resuming a background player (e.g. a browser) would
+				// steal the active player away from the music that is still playing.
+				if (isRealPlayer(modelData) && modelData.isPlaying) root.trackedPlayer = modelData;
 			}
 		}
 	}

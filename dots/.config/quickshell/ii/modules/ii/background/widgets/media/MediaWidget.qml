@@ -24,10 +24,39 @@ AbstractBackgroundWidget {
 
     readonly property var playerList: MprisController.players
     property MprisPlayer currentPlayer: MprisController.activePlayer
-    property var artUrl: currentPlayer?.trackArtUrl ?? ""
+    readonly property bool isYtMusic: {
+        const yt = YtMusic.mpvPlayer
+        return root.currentPlayer !== null && yt !== null && root.currentPlayer.dbusName === yt.dbusName
+    }
+    property var artUrl: {
+        const direct = root.currentPlayer?.trackArtUrl ?? ""
+        if (direct.length > 0) return direct
+        if (root.isYtMusic) return YtMusic.currentThumbnail ?? ""
+        // mpv-mpris does not expose artUrl for streams; fall back to the YT Music
+        // thumbnail whenever the active player is our mpv, even if the identity
+        // comparison above has not caught up yet.
+        if ((root.currentPlayer?.identity ?? "").toLowerCase().includes("mpv"))
+            return YtMusic.currentThumbnail ?? ""
+        return ""
+    }
     property string artDownloadLocation: Directories.coverArt
     property string artFileName: Qt.md5(artUrl)
     property string artFilePath: `${artDownloadLocation}/${artFileName}`
+
+    // Route controls to YtMusic when the active player is the YT Music mpv,
+    // since mpv-mpris does not expose next/previous over MPRIS.
+    function togglePlay() {
+        if (root.isYtMusic) YtMusic.togglePlaying()
+        else root.currentPlayer?.togglePlaying()
+    }
+    function nextTrack() {
+        if (root.isYtMusic) YtMusic.playNext(false)
+        else root.currentPlayer?.next()
+    }
+    function previousTrack() {
+        if (root.isYtMusic) YtMusic.playPrevious()
+        else root.currentPlayer?.previous()
+    }
 
     property real buttonSize: 34
     property real buttonIconSize: 18
@@ -83,7 +112,11 @@ AbstractBackgroundWidget {
     }
 
     property bool downloaded: false
-    property bool showLyrics: false
+    property bool showLyrics: Config.options.background.widgets.media.showLyrics
+    onShowLyricsChanged: {
+        if (Config.options.background.widgets.media.showLyrics !== showLyrics)
+            Config.options.background.widgets.media.showLyrics = showLyrics
+    }
 
     property string displayedArtFilePath: {
         if (!root.artUrl || root.artUrl.length === 0) return ""
@@ -110,20 +143,30 @@ AbstractBackgroundWidget {
         }
         if (root.artUrl.startsWith("http://") || root.artUrl.startsWith("https://")) {
             coverArtDownloader.targetFile = root.artUrl
-            coverArtDownloader.artFilePath = root.artFilePath
+            coverArtDownloader.destFile = root.artFilePath
             root.downloaded = false
-            coverArtDownloader.running = true
+            // Restart cleanly. Setting running=true while a previous download is
+            // still in flight is a no-op, which would leave us marking the new
+            // (never-downloaded) file as ready -> blank cover.
+            coverArtDownloader.running = false
+            artRestartTimer.restart()
         } else {
             root.downloaded = true
         }
     }
 
+    Timer {
+        id: artRestartTimer
+        interval: 0
+        onTriggered: coverArtDownloader.running = true
+    }
+
     Process {
         id: coverArtDownloader
-        property string targetFile: root.artUrl ?? ""
-        property string artFilePath: root.artFilePath
-        command: ["bash", "-c", `[ -f ${artFilePath} ] || curl -sSL '${targetFile}' -o '${artFilePath}'`]
-        onExited: { root.downloaded = true }
+        property string targetFile: ""
+        property string destFile: ""
+        command: ["bash", "-c", `[ -f "${destFile}" ] || curl -fsSL "${targetFile}" -o "${destFile}"`]
+        onExited: (code, status) => { root.downloaded = (code === 0) }
     }
 
     StyledRectangularShadow {
@@ -217,7 +260,7 @@ AbstractBackgroundWidget {
                         colBackground: "transparent"
                         colBackgroundHover: ColorUtils.transparentize("#ffffff", 0.8)
                         colRipple: ColorUtils.transparentize("#ffffff", 0.7)
-                        downAction: () => root.currentPlayer?.previous()
+                        downAction: () => root.previousTrack()
 
                         MaterialSymbol {
                             anchors.centerIn: parent
@@ -239,7 +282,7 @@ AbstractBackgroundWidget {
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: root.currentPlayer?.togglePlaying()
+                            onClicked: root.togglePlay()
                         }
                     }
 
@@ -250,7 +293,7 @@ AbstractBackgroundWidget {
                         colBackground: "transparent"
                         colBackgroundHover: ColorUtils.transparentize("#ffffff", 0.8)
                         colRipple: ColorUtils.transparentize("#ffffff", 0.7)
-                        downAction: () => root.currentPlayer?.next()
+                        downAction: () => root.nextTrack()
 
                         MaterialSymbol {
                             anchors.centerIn: parent
@@ -359,7 +402,7 @@ AbstractBackgroundWidget {
                             colBackground: "transparent"
                             colBackgroundHover: Appearance.colors.colPrimaryContainerHover
                             colRipple: Appearance.colors.colPrimaryContainerActive
-                            downAction: () => root.currentPlayer?.previous()
+                            downAction: () => root.previousTrack()
 
                             MaterialSymbol {
                                 anchors.centerIn: parent
@@ -381,7 +424,7 @@ AbstractBackgroundWidget {
 
                             MouseArea {
                                 anchors.fill: parent
-                                onClicked: root.currentPlayer?.togglePlaying()
+                                onClicked: root.togglePlay()
                             }
                         }
 
@@ -392,7 +435,7 @@ AbstractBackgroundWidget {
                             colBackground: "transparent"
                             colBackgroundHover: Appearance.colors.colPrimaryContainerHover
                             colRipple: Appearance.colors.colPrimaryContainerActive
-                            downAction: () => root.currentPlayer?.next()
+                            downAction: () => root.nextTrack()
 
                             MaterialSymbol {
                                 anchors.centerIn: parent
@@ -499,7 +542,7 @@ AbstractBackgroundWidget {
                         colBackground: "transparent"
                         colBackgroundHover: Appearance.colors.colPrimaryContainerHover
                         colRipple: Appearance.colors.colPrimaryContainerActive
-                        downAction: () => root.currentPlayer?.previous()
+                        downAction: () => root.previousTrack()
 
                         MaterialSymbol {
                             anchors.centerIn: parent
@@ -521,7 +564,7 @@ AbstractBackgroundWidget {
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: root.currentPlayer?.togglePlaying()
+                            onClicked: root.togglePlay()
                         }
                     }
 
@@ -532,7 +575,7 @@ AbstractBackgroundWidget {
                         colBackground: "transparent"
                         colBackgroundHover: Appearance.colors.colPrimaryContainerHover
                         colRipple: Appearance.colors.colPrimaryContainerActive
-                        downAction: () => root.currentPlayer?.next()
+                        downAction: () => root.nextTrack()
 
                         MaterialSymbol {
                             anchors.centerIn: parent
@@ -686,7 +729,7 @@ AbstractBackgroundWidget {
 
                                     MouseArea {
                                         anchors.fill: parent
-                                        onClicked: root.currentPlayer?.togglePlaying()
+                                        onClicked: root.togglePlay()
                                     }
                                 }
 
@@ -697,8 +740,8 @@ AbstractBackgroundWidget {
                                     colBackground: "transparent"
                                     colBackgroundHover: Appearance.colors.colPrimaryContainerHover
                                     colRipple: Appearance.colors.colPrimaryContainerActive
-                                    downAction: () => root.currentPlayer?.next()
-                                    altAction: () => root.currentPlayer?.previous()
+                                    downAction: () => root.nextTrack()
+                                    altAction: () => root.previousTrack()
 
                                     MaterialSymbol {
                                         anchors.centerIn: parent
@@ -862,9 +905,9 @@ AbstractBackgroundWidget {
                                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                                     onClicked: (mouse) => {
                                         if (mouse.button === Qt.RightButton) {
-                                            root.currentPlayer?.next()
+                                            root.nextTrack()
                                         } else {
-                                            root.currentPlayer?.togglePlaying()
+                                            root.togglePlay()
                                         }
                                     }
                                 }

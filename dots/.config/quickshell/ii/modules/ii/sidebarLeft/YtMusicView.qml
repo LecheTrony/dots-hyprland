@@ -121,6 +121,8 @@ Item {
                 }
                 StyledText { 
                     Layout.alignment: Qt.AlignHCenter
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignHCenter
                     text: Translation.tr("yt-dlp not found")
                     font.pixelSize: Appearance.font.pixelSize.larger
                     font.weight: Font.Medium
@@ -129,25 +131,69 @@ Item {
                 StyledText { 
                     Layout.alignment: Qt.AlignHCenter
                     Layout.fillWidth: true
-                    Layout.margins: 20
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 20
                     horizontalAlignment: Text.AlignHCenter
                     wrapMode: Text.WordWrap
-                    text: Translation.tr("Install yt-dlp and mpv to use YT Music")
+                    text: Translation.tr("Install yt-dlp, mpv, socat, deno and python-ytmusicapi to use YT Music")
                     font.pixelSize: Appearance.font.pixelSize.small
                     color: root.colTextSecondary 
                 }
-                RippleButton {
+                ColumnLayout {
                     Layout.alignment: Qt.AlignHCenter
-                    implicitWidth: 160
-                    implicitHeight: 42
-                    buttonRadius: root.radiusNormal
-                    colBackground: root.colPrimary
-                    onClicked: Qt.openUrlExternally("https://github.com/yt-dlp/yt-dlp#installation")
-                    contentItem: StyledText { 
-                        anchors.centerIn: parent
-                        text: Translation.tr("Install Guide")
-                        color: Appearance.colors.colOnPrimary
-                        font.weight: Font.Medium 
+                    spacing: 8
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 20
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: 360
+                    RippleButton {
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        buttonRadius: root.radiusNormal
+                        colBackground: root.colPrimary
+                        onClicked: {
+                            Quickshell.execDetached(["kitty", "-1", "--hold=yes", "bash", "-c", Directories.scriptPath + "/ytmusic-install-deps.sh --in-terminal"])
+                        }
+                        contentItem: StyledText { 
+                            anchors.centerIn: parent
+                            text: Translation.tr("Install dependencies")
+                            color: Appearance.colors.colOnPrimary
+                            font.weight: Font.Medium 
+                        }
+                    }
+                    RowLayout {
+                        Layout.alignment: Qt.AlignHCenter
+                        spacing: 8
+                        Layout.fillWidth: true
+                        RippleButton {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 40
+                            buttonRadius: root.radiusNormal
+                            colBackground: root.colLayer2
+                            colBackgroundHover: root.colLayer2Hover
+                            onClicked: YtMusic.recheckAvailability()
+                            contentItem: StyledText { 
+                                anchors.centerIn: parent
+                                text: Translation.tr("Retry")
+                                color: root.colText
+                                font.weight: Font.Medium 
+                            }
+                        }
+                        RippleButton {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 40
+                            buttonRadius: root.radiusNormal
+                            colBackground: root.colLayer2
+                            colBackgroundHover: root.colLayer2Hover
+                            onClicked: Qt.openUrlExternally("https://github.com/yt-dlp/yt-dlp#installation")
+                            contentItem: StyledText { 
+                                anchors.centerIn: parent
+                                text: Translation.tr("Install Guide")
+                                color: root.colText
+                                font.weight: Font.Medium 
+                            }
+                        }
                     }
                 }
                 Item { Layout.fillHeight: true }

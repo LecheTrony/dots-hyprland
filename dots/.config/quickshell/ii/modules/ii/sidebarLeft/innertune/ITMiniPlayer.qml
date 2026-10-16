@@ -96,7 +96,7 @@ Item {
             buttonRadius: Appearance.rounding.full
             colBackground: "transparent"
             enabled: YtMusic.canGoNext
-            releaseAction: () => MprisController.nextForPlayer(YtMusic.mpvPlayer)
+            releaseAction: () => YtMusic.playNext(false)
             contentItem: MaterialSymbol {
                 anchors.centerIn: parent
                 text: "skip_next"

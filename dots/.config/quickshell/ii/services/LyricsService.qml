@@ -36,6 +36,7 @@ Singleton {
 
     readonly property bool playing: root.activePlayer?.isPlaying ?? false
     readonly property bool synced: root.status === "ok" && root.lyricsLines.length > 0
+    readonly property bool hasLyrics: root.status === "ok" || root.status === "plain"
     readonly property real leadSeconds: 0.15
 
     property real basePosition: 0
@@ -117,7 +118,8 @@ Singleton {
 
                 const parts = trimmed.split("§")
                 if (parts.length < 3) return
-                if (parts[parts.length - 1].trim() !== "ok") return
+                const marker = parts[parts.length - 1].trim()
+                if (marker !== "ok" && marker !== "plain") return
 
                 let lines = []
                 for (let i = 0; i < parts.length - 1; i += 2) {
@@ -131,8 +133,8 @@ Singleton {
                 root.lyricsLines = lines
                 root.activeIndex = -1
                 root.slots = root.buildSlots(-1)
-                root.status = "ok"
-                root.resync()
+                root.status = marker === "plain" ? "plain" : "ok"
+                if (marker === "ok") root.resync()
             }
         }
     }

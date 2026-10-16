@@ -67,6 +67,7 @@ Item {
 
             Row {
                 id: contentItem
+                z: 1
                 anchors.horizontalCenter: parent.horizontalCenter
                 y: (parent.height - implicitHeight) / 2
                 spacing: 4

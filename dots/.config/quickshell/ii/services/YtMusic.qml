@@ -4,6 +4,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import Quickshell.Services.Mpris
 import qs
 import qs.modules.common
@@ -211,11 +212,14 @@ Singleton {
     readonly property MprisPlayer mpvPlayer: _mpvPlayer
     
     readonly property bool hasActivePlaylist: activePlaylist.length > 0 && currentIndex >= 0
-    readonly property bool canGoNext: hasActivePlaylist && (currentIndex < activePlaylist.length - 1 || repeatMode === 2 || shuffleMode)
+    readonly property bool canGoNext: (hasActivePlaylist && (currentIndex < activePlaylist.length - 1 || repeatMode === 2 || shuffleMode)) || queue.length > 0
     readonly property bool canGoPrevious: hasActivePlaylist && (currentIndex > 0 || repeatMode === 2 || currentPosition > 3)
     
     function _isOurMpv(player): bool {
         if (!player) return false
+        // playerctld mirrors whichever player is active and would otherwise be
+        // picked up here as "our mpv", desyncing from MprisController.activePlayer.
+        if (player.dbusName?.startsWith("org.mpris.MediaPlayer2.playerctld")) return false
         const id = (player.identity ?? "").toLowerCase()
         const entry = (player.desktopEntry ?? "").toLowerCase()
         if (id !== "mpv" && !id.includes("mpv") && entry !== "mpv" && !entry.includes("mpv")) return false
@@ -373,6 +377,14 @@ Singleton {
     property bool _initialized: false
     Component.onCompleted: {
         if (root.enabled) root._initialize()
+    }
+
+    function recheckAvailability(): void {
+        root.available = false
+        root.error = ""
+        root.googleError = ""
+        _checkAvailability.running = true
+        try { if (InnerTube) InnerTube.retryAvailability() } catch (e) {}
     }
 
     function _initialize() {
@@ -873,10 +885,14 @@ Singleton {
     }
 
     function _shouldNotifyUpcomingTrack(): bool {
-        if (!root.upNextNotificationsEnabled) return false
-        if (Config.options?.notifications?.silent ?? false) return false
-        if (root.suppressUpNextInFullscreen && (GameMode.active || GameMode.hasAnyFullscreenWindow)) return false
-        return true
+        try {
+            if (!root.upNextNotificationsEnabled) return false
+            if (Config.options?.notifications?.silent ?? false) return false
+            if (root.suppressUpNextInFullscreen && (ToplevelManager.activeToplevel?.wayland?.fullscreen ?? false)) return false
+            return true
+        } catch (e) {
+            return false
+        }
     }
 
     function _notifyUpcomingTrack(item): void {
@@ -2078,7 +2094,7 @@ print("")
             "--audio-display=no",
             "--input-ipc-server=" + root.ipcSocket,
             ...(root._loadMpvMprisExplicitly ? ["--script=/usr/lib/mpv-mpris/mpris.so"] : []),
-            "--force-media-title=" + root.currentTitle + (root.currentArtist ? " - " + root.currentArtist : ""),
+            "--force-media-title=" + root.currentTitle,
             "--metadata-codepage=utf-8",
             "--volume=" + root._savedVolume,
             "--volume-max=100",
@@ -2246,7 +2262,7 @@ print("")
         function next(): void {
             if (!root.canGoNext)
                 return
-            root.playNext()
+            root.playNext(false)
             if (Config.options?.osd?.mediaEnabled ?? true)
                 root._notifyMediaAction("next")
         }
