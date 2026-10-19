@@ -787,6 +787,11 @@ Singleton {
                 // through. Applied through the override file that kitty.conf
                 // includes last, so the running terminal picks it up.
                 property real opacity: 0.9
+                // Liquid Glass: a stronger, frosted translucency that lets the
+                // compositor blur show through for a macOS-style glass look.
+                // While on it replaces `opacity` with `liquidGlassOpacity`.
+                property bool liquidGlass: false
+                property real liquidGlassOpacity: 0.5
             }
 
             property JsonObject time: JsonObject {

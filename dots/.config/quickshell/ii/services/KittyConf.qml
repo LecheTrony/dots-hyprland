@@ -23,16 +23,28 @@ Singleton {
     // Kept in sync with the shipped kitty.conf default, used before the config
     // has been read so the UI never shows a bogus value.
     readonly property real fallbackOpacity: 0.9
-    readonly property real opacity: Config.ready ? Config.options.terminal.opacity : root.fallbackOpacity
+    readonly property bool liquidGlass: Config.ready ? Config.options.terminal.liquidGlass : false
+    readonly property real plainOpacity: Config.ready ? Config.options.terminal.opacity : root.fallbackOpacity
+    readonly property real glassOpacity: Config.ready ? Config.options.terminal.liquidGlassOpacity : 0.5
+    // Liquid Glass swaps the plain opacity for a stronger frosted one.
+    readonly property real opacity: root.liquidGlass ? root.glassOpacity : root.plainOpacity
 
     function buildOverrides() {
-        return [
+        const lines = [
             "# Written by the settings menu (Quickshell).",
             "# Your changes are rewritten whenever a terminal setting changes.",
             "",
             "background_opacity " + root.opacity.toFixed(2),
-            ""
-        ].join("\n");
+        ];
+        // The frost is drawn by the compositor (blur is enabled for kitty in the
+        // Hyprland rules); kitty cannot blur on Hyprland. These options only
+        // matter where kitty does its own blur (KDE/macOS) and keep the glass
+        // look consistent there.
+        if (root.liquidGlass) {
+            lines.push("background_blur 1");
+        }
+        lines.push("");
+        return lines.join("\n");
     }
 
     function write() {
@@ -81,6 +93,15 @@ Singleton {
             root.write();
             root.reloadTerminals();
         }
+    }
+
+    // Keep the override in sync when the value changes from anywhere (settings
+    // UI, config.json edits, etc.), not just from the settings menu.
+    Connections {
+        target: Config.options.terminal
+        function onOpacityChanged() { root.scheduleWrite(); }
+        function onLiquidGlassChanged() { root.scheduleWrite(); }
+        function onLiquidGlassOpacityChanged() { root.scheduleWrite(); }
     }
 
     // Called from the shell on startup so the file is seeded even if the user

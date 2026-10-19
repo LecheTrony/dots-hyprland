@@ -26,9 +26,40 @@ ContentPage {
                 buttonIcon: "contrast"
                 from: 50
                 to: 100
-                value: Math.round((KittyConf.opacity * 100) * 100) / 100
+                value: Math.round((KittyConf.plainOpacity * 100) * 100) / 100
                 onValueChanged: {
                     Config.options.terminal.opacity = value / 100;
+                    KittyConf.scheduleWrite();
+                }
+            }
+        }
+
+        ConfigSwitch {
+            buttonIcon: "blur_on"
+            text: Translation.tr("Liquid Glass")
+            checked: Config.options.terminal.liquidGlass
+            onCheckedChanged: {
+                Config.options.terminal.liquidGlass = checked;
+                KittyConf.scheduleWrite();
+            }
+            StyledToolTip {
+                text: Translation.tr("Stronger frosted translucency that lets the compositor's blur show through, for a macOS-style glass look. Replaces the background opacity above while on.")
+            }
+        }
+
+        ContentSubsection {
+            title: Translation.tr("Glass opacity")
+            visible: Config.options.terminal.liquidGlass
+            tooltip: Translation.tr("How solid the glass is while Liquid Glass is on. Lower values let more of the blurred desktop show through.")
+
+            ConfigSlider {
+                text: Translation.tr("Glass opacity")
+                buttonIcon: "opacity"
+                from: 20
+                to: 90
+                value: Math.round((KittyConf.glassOpacity * 100) * 100) / 100
+                onValueChanged: {
+                    Config.options.terminal.liquidGlassOpacity = value / 100;
                     KittyConf.scheduleWrite();
                 }
             }
