@@ -45,6 +45,16 @@ ApplicationWindow {
             component: "modules/settings/WidgetsConfig.qml"
         },
         {
+            name: Translation.tr("Style Profiles"),
+            icon: "bookmarks",
+            component: "modules/settings/ThemeProfilesConfig.qml"
+        },
+        {
+            name: Translation.tr("Background"),
+            icon: "wallpaper",
+            component: "modules/settings/BackgroundConfig.qml"
+        },
+        {
             name: Translation.tr("Interface"),
             icon: "bottom_app_bar",
             component: "modules/settings/InterfaceConfig.qml"

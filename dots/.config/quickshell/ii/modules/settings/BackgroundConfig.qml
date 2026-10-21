@@ -8,6 +8,102 @@ ContentPage {
     forceWidth: true
 
     ContentSection {
+        icon: "shapes"
+        title: Translation.tr("Centered wallpaper")
+
+        StyledText {
+            Layout.fillWidth: true
+            wrapMode: Text.Wrap
+            color: Appearance.colors.colSubtext
+            text: Translation.tr("Shows the wallpaper clipped inside a Material shape, centered on the screen. It rests inside the shape when locked and expands to fill the screen on the desktop.")
+        }
+
+        ConfigSwitch {
+            buttonIcon: "check"
+            text: Translation.tr("Enable")
+            checked: Config.options.background.centeredWallpaper
+            onCheckedChanged: {
+                Config.options.background.centeredWallpaper = checked;
+            }
+        }
+
+        ConfigSwitch {
+            buttonIcon: "lock"
+            text: Translation.tr("Only when locked")
+            checked: Config.options.background.centeredWallpaperOnlyWhenLocked
+            enabled: Config.options.background.centeredWallpaper
+            onCheckedChanged: {
+                Config.options.background.centeredWallpaperOnlyWhenLocked = checked;
+            }
+        }
+
+        ConfigSwitch {
+            buttonIcon: "mouse"
+            text: Translation.tr("Scroll on the shape to change it")
+            checked: Config.options.background.centeredWallpaperShapeCycle
+            enabled: Config.options.background.centeredWallpaper
+            onCheckedChanged: {
+                Config.options.background.centeredWallpaperShapeCycle = checked;
+            }
+            StyledToolTip {
+                text: Translation.tr("Allows cycling through the available shapes by scrolling the mouse wheel over the centered wallpaper. You can also click it to make it bounce.")
+            }
+        }
+
+        ContentSubsection {
+            visible: Config.options.background.centeredWallpaper
+            title: Translation.tr("Shape")
+
+            ConfigSelectionShapeArray {
+                Layout.fillWidth: true
+                currentValue: Config.options.background.centeredWallpaperShape
+                shapeColor: Appearance.colors.colPrimary
+                backgroundColor: Appearance.colors.colPrimaryContainer
+                options: [
+                    "Circle", "Square", "Cookie12Sided", "Clover4Leaf", "Pill", "Heart"
+                ]
+                onSelected: newValue => {
+                    Config.options.background.centeredWallpaperShape = newValue;
+                }
+            }
+        }
+
+        ContentSubsection {
+            visible: Config.options.background.centeredWallpaper
+            title: Translation.tr("Color")
+
+            ConfigSelectionArray {
+                currentValue: Config.options.background.centeredWallpaperColor
+                onSelected: newValue => {
+                    Config.options.background.centeredWallpaperColor = newValue;
+                }
+                options: [
+                    { displayName: Translation.tr("Primary"), icon: "palette", value: "primary" },
+                    { displayName: Translation.tr("Secondary"), icon: "palette", value: "secondary" },
+                    { displayName: Translation.tr("Tertiary"), icon: "palette", value: "tertiary" },
+                    { displayName: Translation.tr("Primary container"), icon: "palette", value: "primaryContainer" },
+                    { displayName: Translation.tr("Secondary container"), icon: "palette", value: "secondaryContainer" },
+                    { displayName: Translation.tr("Tertiary container"), icon: "palette", value: "tertiaryContainer" }
+                ]
+            }
+        }
+
+        ConfigSlider {
+            visible: Config.options.background.centeredWallpaper
+            text: Translation.tr("Shape size")
+            value: Config.options.background.centeredWallpaperSize
+            usePercentTooltip: false
+            buttonIcon: "aspect_ratio"
+            from: 200
+            to: 900
+            stopIndicatorValues: [400]
+            onValueChanged: {
+                Config.options.background.centeredWallpaperSize = value;
+            }
+        }
+    }
+
+    ContentSection {
         icon: "slideshow"
         title: Translation.tr("Wallpaper transition")
 

@@ -40,6 +40,21 @@ Singleton {
     property string wallpaperSelectorTargetMonitor: ""
     property bool workspaceShowNumbers: false
 
+    // Centered wallpaper shapes available for scroll-wheel cycling.
+    readonly property var centeredWallpaperShapeCycle: [
+        "Circle", "Square", "Cookie12Sided", "Clover4Leaf", "Pill", "Heart"
+    ]
+
+    function cycleCenteredWallpaperShape(direction) {
+        const shapes = root.centeredWallpaperShapeCycle;
+        if (shapes.length === 0) return;
+        const current = Config.options.background.centeredWallpaperShape;
+        let index = shapes.indexOf(current);
+        if (index === -1) index = 0;
+        index = (index + (direction > 0 ? 1 : -1) + shapes.length) % shapes.length;
+        Config.options.background.centeredWallpaperShape = shapes[index];
+    }
+
     onSidebarRightOpenChanged: {
         if (GlobalStates.sidebarRightOpen) {
             Notifications.timeoutAll();

@@ -374,6 +374,13 @@ Singleton {
                 property string wallpaperPath: ""
                 property string thumbnailPath: ""
                 property bool hideWhenFullscreen: true
+                // Centered wallpaper: shows the wallpaper clipped inside a Material shape.
+                property bool centeredWallpaper: false
+                property string centeredWallpaperShape: "Cookie7Sided" // See ShapeUtils.getShape
+                property int centeredWallpaperSize: 400
+                property string centeredWallpaperColor: "primaryContainer"
+                property bool centeredWallpaperOnlyWhenLocked: false
+                property bool centeredWallpaperShapeCycle: true // Scroll wheel on the shape to change it
                 property JsonObject parallax: JsonObject {
                     property bool vertical: false
                     property bool autoVertical: false

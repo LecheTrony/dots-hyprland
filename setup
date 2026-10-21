@@ -28,6 +28,7 @@ Subcommands:
   install-deps   Run the install step \"1. Install dependencies\"
   install-setups Run the install step \"2. Setup for permissions/services etc\"
   install-files  Run the install step \"3. Copying config files\"
+  install-apps   Run the install step \"4. Optional apps\"
   resetfirstrun  Reset firstrun state.
   uninstall      Uninstall illogical-impulse.
 
@@ -54,7 +55,7 @@ case $1 in
     SUBCMD_DIR=./sdata/subcmd-$1
     shift;;
   # Correct subcommand but not using ./sdata/subcmd-$1
-  install-deps|install-setups|install-files)
+  install-deps|install-setups|install-files|install-apps)
     SUBCMD_NAME=$1
     SUBCMD_DIR=./sdata/subcmd-install
     shift;;
@@ -86,6 +87,9 @@ case ${SUBCMD_NAME} in
     fi
     if [[ "${SKIP_ALLFILES}" != true ]]; then
       source ${SUBCMD_DIR}/3.files.sh
+    fi
+    if [[ "${SKIP_ALLAPPS}" != true ]]; then
+      source ${SUBCMD_DIR}/4.apps.sh
     fi
     ;;
   install-deps)
@@ -121,6 +125,19 @@ case ${SUBCMD_NAME} in
     pause
     if [[ "${SKIP_ALLFILES}" != true ]]; then
       source ${SUBCMD_DIR}/3.files.sh
+    fi
+    ;;
+  install-apps)
+    for function in ${print_os_group_id_functions[@]}; do
+      $function
+    done
+    pause
+    # Initialize sudo keepalive for app installation
+    sudo_init_keepalive
+    # Set trap to cleanup when this subcommand exits
+    trap sudo_stop_keepalive EXIT INT TERM
+    if [[ "${SKIP_ALLAPPS}" != true ]]; then
+      source ${SUBCMD_DIR}/4.apps.sh
     fi
     ;;
   *)

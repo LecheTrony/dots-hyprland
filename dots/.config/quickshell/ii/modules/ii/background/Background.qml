@@ -198,6 +198,15 @@ Variants {
                 height: bgRoot.scaledWallpaperHeight
             }
 
+            // Centered wallpaper (wallpaper clipped inside a Material shape)
+            CenteredWallpaper {
+                id: centeredWallpaper
+                anchors.fill: parent
+                screen: bgRoot.screen
+                wallpaperPath: bgRoot.wallpaperPath
+                wallpaperIsVideo: bgRoot.wallpaperIsVideo
+            }
+
             Loader {
                 id: blurLoader
                 active: Config.options.lock.blur.enable && (GlobalStates.screenLocked || scaleAnim.running)

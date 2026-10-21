@@ -17,7 +17,10 @@ printf "${STY_CYAN}${STY_BOLD}Quick overview about what this script does:${STY_R
 printf "${STY_CYAN}"
 printf "  1. Install dependencies.\n"
 printf "  2. Setup permissions/services etc.\n"
-printf "  3. Copying config files.${STY_RST}\n"
+printf "  3. Copying config files.\n"
+printf "  4. Optional apps.\n"
+printf "     You choose which extra applications (games, browsers, music,\n"
+printf "     code editors, programming tools) to install — or none at all.${STY_RST}\n"
 pause
 printf "${STY_CYAN}${STY_BOLD}Tips:${STY_RST}\n"
 printf "${STY_CYAN}"
